@@ -1,5 +1,4 @@
-pub mod management;
-pub mod movement;
-pub mod world;
-pub mod collision;
 pub mod camera;
+pub mod management;
+pub mod physics;
+pub mod world;

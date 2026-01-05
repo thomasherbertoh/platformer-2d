@@ -8,8 +8,10 @@ use crate::{
     states::GameState,
     systems::{
         camera::camera_follow_player,
-        collision::player_ground_collision,
-        movement::player_input,
+        physics::{
+            collision::player_ground_collision,
+            movement::{clamp_velocity, player_input},
+        },
         world::{apply_physics, spawn_player},
     },
 };
@@ -24,6 +26,7 @@ impl Plugin for PlayerPlugin {
                 (
                     apply_physics,
                     player_input.run_if(in_state(GameState::Playing)),
+                    clamp_velocity,
                     player_ground_collision,
                     camera_follow_player,
                 )

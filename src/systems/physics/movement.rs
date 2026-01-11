@@ -5,30 +5,40 @@ use bevy::{
     },
     input::{ButtonInput, keyboard::KeyCode},
 };
+use bevy_rapier2d::prelude::Velocity;
 
-use crate::components::{
-    physics::{MaxVelocity, Velocity},
-    tags::Player,
-};
+use crate::components::tags::{OnGround, Player};
 
-pub fn player_input(
+pub fn player_movement(
     keyboard: Res<ButtonInput<KeyCode>>,
     mut query: Query<&mut Velocity, With<Player>>,
 ) {
-    if let Ok(mut velocity) = query.single_mut() {
-        velocity.0.x = 0.0;
+    let speed = 200.0;
+
+    for mut velocity in &mut query {
+        let mut move_dir = 0.0;
         if keyboard.pressed(KeyCode::KeyA) {
-            velocity.0.x = -200.0;
+            move_dir -= 1.0;
         }
         if keyboard.pressed(KeyCode::KeyD) {
-            velocity.0.x = 200.0;
+            move_dir += 1.0;
         }
+
+        velocity.linvel.x = move_dir * speed;
     }
 }
 
-pub fn clamp_velocity(mut query: Query<(&mut Velocity, &MaxVelocity)>) {
-    for (mut velocity, max) in &mut query {
-        velocity.0.x = velocity.0.x.clamp(-max.0.x, max.0.x);
-        velocity.0.y = velocity.0.y.clamp(-max.0.y, max.0.y);
+pub fn jump_system(
+    keyboard: Res<ButtonInput<KeyCode>>,
+    mut query: Query<(&mut Velocity, &OnGround), With<Player>>,
+) {
+    let jump_velocity = 400.0;
+
+    for (mut velocity, on_ground) in &mut query {
+        if on_ground.0
+            && (keyboard.just_pressed(KeyCode::Space) || keyboard.just_pressed(KeyCode::KeyW))
+        {
+            velocity.linvel.y = jump_velocity;
+        }
     }
 }

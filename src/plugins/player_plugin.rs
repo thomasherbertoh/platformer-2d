@@ -9,10 +9,13 @@ use crate::{
     systems::{
         camera::camera_follow_player,
         physics::{
-            collision::player_ground_collision,
-            movement::{clamp_velocity, player_input},
+            collision::{
+                clamp_velocity_when_grounded, foot_sensor_collision_system,
+                ground_detection_system, update_grounded_state,
+            },
+            movement::{jump_system, player_movement},
         },
-        world::{apply_physics, spawn_player},
+        world::spawn_player,
     },
 };
 
@@ -24,10 +27,11 @@ impl Plugin for PlayerPlugin {
             .add_systems(
                 Update,
                 (
-                    apply_physics,
-                    player_input.run_if(in_state(GameState::Playing)),
-                    clamp_velocity,
-                    player_ground_collision,
+                    (player_movement, jump_system).run_if(in_state(GameState::Playing)),
+                    ground_detection_system,
+                    foot_sensor_collision_system,
+                    update_grounded_state,
+                    clamp_velocity_when_grounded,
                     camera_follow_player,
                 )
                     .chain(),

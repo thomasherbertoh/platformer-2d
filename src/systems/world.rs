@@ -1,50 +1,55 @@
 use bevy::{
     color::Color,
-    ecs::system::{Commands, Query, Res},
+    ecs::system::Commands,
     math::Vec2,
     sprite::Sprite,
-    time::Time,
     transform::components::{GlobalTransform, Transform},
+};
+use bevy_rapier2d::prelude::{
+    ActiveEvents, Collider, GravityScale, LockedAxes, RigidBody, Sensor, Velocity,
 };
 
 use crate::{
-    components::{
-        physics::{Collider, Gravity, Velocity},
-        tags::{Ground, Player},
-    },
+    components::tags::{FootSensor, Ground, OnGround, Player},
     resources::world_bounds::WorldBounds,
 };
 
-pub fn apply_physics(time: Res<Time>, mut query: Query<(&mut Transform, &mut Velocity, &Gravity)>) {
-    for (mut transform, mut velocity, gravity) in &mut query {
-        velocity.0.y -= gravity.0 * time.delta_secs();
-        transform.translation += velocity.0.extend(0.0) * time.delta_secs();
-    }
-}
-
 pub fn spawn_player(mut commands: Commands) {
-    commands.spawn((
-        Player,
-        Velocity(Vec2::ZERO),
-        Gravity(512.0),
-        Collider {
-            size: Vec2::new(10.0, 25.0),
-        },
-        Sprite {
-            color: Color::linear_rgb(1.0, 0.4, 0.5),
-            custom_size: Some(Vec2::new(10.0, 25.0)),
-            ..Default::default()
-        },
-        Transform::from_xyz(0.0, 0.0, 0.0),
-        GlobalTransform::default(),
-    ));
+    commands
+        .spawn((
+            Player,
+            OnGround(false),
+            RigidBody::Dynamic,
+            LockedAxes::ROTATION_LOCKED,
+            Velocity::zero(),
+            GravityScale(1.0),
+            Collider::cuboid(5.0, 12.5),
+            ActiveEvents::COLLISION_EVENTS,
+            Sprite {
+                color: Color::linear_rgb(1.0, 0.4, 0.5),
+                custom_size: Some(Vec2::new(10.0, 25.0)),
+                ..Default::default()
+            },
+            Transform::from_xyz(0.0, 50.0, 0.0),
+            GlobalTransform::default(),
+        ))
+        .with_children(|parent| {
+            parent.spawn((
+                FootSensor,
+                Sensor,
+                Collider::cuboid(4.5, 1.0),
+                ActiveEvents::COLLISION_EVENTS,
+                Transform::from_xyz(0.0, -13.5, 0.0),
+                GlobalTransform::default(),
+            ));
+        });
 }
 
 pub fn build_floor(mut commands: Commands) {
-    let ground_size = Vec2::new(200.0, 10.0);
+    let ground_size = Vec2::new(400.0, 10.0);
     commands.spawn((
         Ground,
-        Collider { size: ground_size },
+        Collider::cuboid(ground_size.x / 2.0, ground_size.y / 2.0),
         Sprite {
             color: Color::WHITE,
             custom_size: Some(ground_size),
@@ -53,8 +58,8 @@ pub fn build_floor(mut commands: Commands) {
         Transform::from_xyz(0.0, -200.0, 0.0),
         GlobalTransform::default(),
     ));
-    commands.insert_resource(WorldBounds::new(
-        Vec2::new(-500.0, -300.0),
-        Vec2::new(500.0, 300.0),
-    ));
+    commands.insert_resource(WorldBounds {
+        min: Vec2::new(-500.0, -300.0),
+        max: Vec2::new(500.0, 300.0),
+    });
 }

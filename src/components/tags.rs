@@ -5,3 +5,9 @@ pub struct Player;
 
 #[derive(Component)]
 pub struct Ground;
+
+#[derive(Component)]
+pub struct OnGround(pub bool);
+
+#[derive(Component)]
+pub struct FootSensor;

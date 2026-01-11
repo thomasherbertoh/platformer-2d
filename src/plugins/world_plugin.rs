@@ -8,7 +8,7 @@ use crate::{
     states::GameState,
     systems::{
         camera::{center_camera_on_world, spawn_camera, update_camera_projection_on_resize},
-        world::{apply_physics, build_floor},
+        world::build_floor,
     },
 };
 
@@ -19,11 +19,7 @@ impl Plugin for WorldPlugin {
         app.add_systems(OnEnter(GameState::Playing), (build_floor, spawn_camera))
             .add_systems(
                 Update,
-                ((
-                    apply_physics,
-                    center_camera_on_world,
-                    update_camera_projection_on_resize,
-                )
+                ((center_camera_on_world, update_camera_projection_on_resize)
                     .run_if(in_state(GameState::Playing)),),
             );
     }

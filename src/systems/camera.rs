@@ -32,7 +32,7 @@ pub fn center_camera_on_world(
     mut camera_query: Query<&mut Transform, With<Camera>>,
 ) {
     if let Ok(mut transform) = camera_query.single_mut() {
-        let center = (bounds.get_min() + bounds.get_max()) / 2.0;
+        let center = (bounds.min + bounds.max) / 2.0;
         transform.translation.x = center.x;
         transform.translation.y = center.y;
     }
@@ -51,7 +51,7 @@ pub fn update_camera_projection_on_resize(
     if let Ok(window) = windows.single()
         && let Ok(mut projection) = query.single_mut()
     {
-        let world_height = bounds.get_max().y - bounds.get_min().y;
+        let world_height = bounds.max.y - bounds.min.y;
 
         if let Projection::Orthographic(ref mut ortho) = *projection {
             ortho.scale = world_height / window.resolution.height();

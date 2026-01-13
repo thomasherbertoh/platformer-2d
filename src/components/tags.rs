@@ -1,6 +1,9 @@
 use bevy::ecs::component::Component;
 
 #[derive(Component)]
+pub struct SplashEntity;
+
+#[derive(Component)]
 pub struct Player;
 
 #[derive(Component)]

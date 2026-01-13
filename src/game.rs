@@ -1,14 +1,21 @@
 use bevy::{
     app::{App, Plugin, Update},
     ecs::schedule::IntoScheduleConfigs,
-    state::{app::AppExtStates, condition::in_state},
+    state::{
+        app::AppExtStates,
+        condition::in_state,
+        state::{OnEnter, OnExit},
+    },
 };
 
 use crate::{
     plugins::{player_plugin::PlayerPlugin, world_plugin::WorldPlugin},
     resources::ground_contacts::GroundContacts,
     states::GameState,
-    systems::management::exit_menu,
+    systems::{
+        management::exit_menu,
+        splash::{cleanup_splash, setup_splash, splash_timer},
+    },
 };
 
 pub struct GamePlugin;
@@ -18,6 +25,14 @@ impl Plugin for GamePlugin {
         app.insert_state(GameState::default())
             .init_resource::<GroundContacts>()
             .add_plugins((PlayerPlugin, WorldPlugin))
-            .add_systems(Update, exit_menu.run_if(in_state(GameState::MainMenu)));
+            .add_systems(OnEnter(GameState::SplashScreen), setup_splash)
+            .add_systems(OnExit(GameState::SplashScreen), cleanup_splash)
+            .add_systems(
+                Update,
+                (
+                    splash_timer.run_if(in_state(GameState::SplashScreen)),
+                    exit_menu.run_if(in_state(GameState::MainMenu)),
+                ),
+            );
     }
 }

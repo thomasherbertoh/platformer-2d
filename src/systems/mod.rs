@@ -1,5 +1,5 @@
 pub mod camera;
-pub mod management;
+pub mod menu;
 pub mod physics;
-pub mod world;
 pub mod splash;
+pub mod world;

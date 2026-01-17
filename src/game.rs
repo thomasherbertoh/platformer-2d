@@ -13,7 +13,7 @@ use crate::{
     resources::ground_contacts::GroundContacts,
     states::GameState,
     systems::{
-        management::exit_menu,
+        menu::{cleanup_menu, menu_button_system, setup_menu},
         splash::{cleanup_splash, setup_splash, splash_timer},
     },
 };
@@ -27,11 +27,13 @@ impl Plugin for GamePlugin {
             .add_plugins((PlayerPlugin, WorldPlugin))
             .add_systems(OnEnter(GameState::SplashScreen), setup_splash)
             .add_systems(OnExit(GameState::SplashScreen), cleanup_splash)
+            .add_systems(OnEnter(GameState::MainMenu), setup_menu)
+            .add_systems(OnExit(GameState::MainMenu), cleanup_menu)
             .add_systems(
                 Update,
                 (
                     splash_timer.run_if(in_state(GameState::SplashScreen)),
-                    exit_menu.run_if(in_state(GameState::MainMenu)),
+                    menu_button_system.run_if(in_state(GameState::MainMenu)),
                 ),
             );
     }

@@ -4,6 +4,9 @@ use bevy::ecs::component::Component;
 pub struct SplashEntity;
 
 #[derive(Component)]
+pub struct MenuUI;
+
+#[derive(Component)]
 pub struct Player;
 
 #[derive(Component)]

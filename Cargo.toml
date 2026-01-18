@@ -6,3 +6,5 @@ edition = "2024"
 [dependencies]
 bevy = "0.17.3"
 bevy_rapier2d = "0.32.0"
+serde = "1.0.228"
+serde_json = "1.0.149"

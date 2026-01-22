@@ -1,14 +1,17 @@
 use bevy::{
     app::{App, Plugin, Update},
     ecs::schedule::IntoScheduleConfigs,
+    math::{Vec2, Vec3},
     state::{condition::in_state, state::OnEnter},
 };
 
 use crate::{
+    components::tags::{Block, BlockType},
+    resources::world::{LevelData, WorldBounds},
     states::GameState,
     systems::{
         camera::{center_camera_on_world, spawn_camera, update_camera_projection_on_resize},
-        world::build_floor,
+        world::{build_world, save_level},
     },
 };
 
@@ -16,11 +19,46 @@ pub struct WorldPlugin;
 
 impl Plugin for WorldPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::Playing), (build_floor, spawn_camera))
-            .add_systems(
-                Update,
-                ((center_camera_on_world, update_camera_projection_on_resize)
-                    .run_if(in_state(GameState::Playing)),),
-            );
+        let mut blocks = Vec::new();
+        for i in 0..10 {
+            blocks.push(Block::new(
+                Vec3::new(i as f32 * 10.0, 0.0, 0.0),
+                Vec2::new(10.0, 10.0),
+                BlockType::Floor,
+            ));
+        }
+        for i in 0..10 {
+            blocks.push(Block::new(
+                Vec3::new(100.0 + i as f32 * 10.0, 50.0, 0.0),
+                Vec2::new(10.0, 10.0),
+                BlockType::Floor,
+            ));
+        }
+        for i in 0..10 {
+            blocks.push(Block::new(
+                Vec3::new(-100.0 + i as f32 * 10.0, 50.0, 0.0),
+                Vec2::new(10.0, 10.0),
+                BlockType::Floor,
+            ));
+        }
+        blocks.push(Block::new(
+            Vec3::new(0.0, 10.0, 0.0),
+            Vec2::new(10.0, 10.0),
+            BlockType::PlayerSpawn,
+        ));
+        app.insert_resource(WorldBounds {
+            min: Vec2::new(-500.0, -300.0),
+            max: Vec2::new(500.0, 300.0),
+        })
+        .insert_resource(LevelData { blocks })
+        .add_systems(
+            OnEnter(GameState::Playing),
+            (save_level, build_world, spawn_camera),
+        )
+        .add_systems(
+            Update,
+            ((center_camera_on_world, update_camera_projection_on_resize)
+                .run_if(in_state(GameState::Playing)),),
+        );
     }
 }

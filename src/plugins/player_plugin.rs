@@ -1,7 +1,7 @@
 use bevy::{
     app::{App, Plugin, Update},
     ecs::schedule::IntoScheduleConfigs,
-    state::{condition::in_state, state::OnEnter},
+    state::condition::in_state,
 };
 
 use crate::{
@@ -15,7 +15,6 @@ use crate::{
             },
             movement::{jump_system, player_movement},
         },
-        world::spawn_player,
     },
 };
 
@@ -23,18 +22,17 @@ pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::Playing), spawn_player)
-            .add_systems(
-                Update,
-                (
-                    (player_movement, jump_system).run_if(in_state(GameState::Playing)),
-                    ground_detection_system,
-                    foot_sensor_collision_system,
-                    update_grounded_state,
-                    clamp_velocity_when_grounded,
-                    camera_follow_player,
-                )
-                    .chain(),
-            );
+        app.add_systems(
+            Update,
+            (
+                (player_movement, jump_system).run_if(in_state(GameState::Playing)),
+                ground_detection_system,
+                foot_sensor_collision_system,
+                update_grounded_state,
+                clamp_velocity_when_grounded,
+                camera_follow_player,
+            )
+                .chain(),
+        );
     }
 }

@@ -1,7 +1,9 @@
+use std::fs;
+
 use bevy::{
     color::Color,
-    ecs::system::Commands,
-    math::Vec2,
+    ecs::system::{Commands, Res},
+    math::{Vec2, Vec3},
     sprite::Sprite,
     transform::components::{GlobalTransform, Transform},
 };
@@ -10,11 +12,42 @@ use bevy_rapier2d::prelude::{
 };
 
 use crate::{
-    components::tags::{FootSensor, Ground, OnGround, Player},
-    resources::world_bounds::WorldBounds,
+    components::tags::{
+        Block,
+        BlockType::{End, Floor, PlayerSpawn},
+        FootSensor, Ground, OnGround, Player,
+    },
+    resources::world::LevelData,
 };
 
-pub fn spawn_player(mut commands: Commands) {
+pub fn build_world(mut commands: Commands, level_data: Res<LevelData>) {
+    let mut floor_blocks = Vec::new();
+    let mut non_floor_blocks = Vec::new();
+
+    level_data
+        .blocks
+        .iter()
+        .for_each(|block| match block.block_type {
+            Floor => floor_blocks.push(block.clone()),
+            _ => non_floor_blocks.push(block.clone()),
+        });
+
+    let mut blocks = merge_blocks_horizontally(floor_blocks);
+    blocks.extend(non_floor_blocks);
+
+    for block in &blocks {
+        match block.block_type {
+            Floor => spawn_block(&mut commands, block.pos, block.size),
+            PlayerSpawn => spawn_player(&mut commands, block.pos),
+            End => todo!(),
+        }
+    }
+
+    // save the processed level
+    save_level_data(LevelData { blocks }, Some("level-processed"));
+}
+
+fn spawn_player(commands: &mut Commands, pos: Vec3) {
     commands
         .spawn((
             Player,
@@ -30,7 +63,7 @@ pub fn spawn_player(mut commands: Commands) {
                 custom_size: Some(Vec2::new(10.0, 25.0)),
                 ..Default::default()
             },
-            Transform::from_xyz(0.0, 50.0, 0.0),
+            Transform::from_translation(pos),
             GlobalTransform::default(),
         ))
         .with_children(|parent| {
@@ -45,21 +78,68 @@ pub fn spawn_player(mut commands: Commands) {
         });
 }
 
-pub fn build_floor(mut commands: Commands) {
-    let ground_size = Vec2::new(400.0, 10.0);
+fn spawn_block(commands: &mut Commands, pos: Vec3, block_size: Vec2) {
     commands.spawn((
         Ground,
-        Collider::cuboid(ground_size.x / 2.0, ground_size.y / 2.0),
+        Collider::cuboid(block_size.x / 2.0, block_size.y / 2.0),
         Sprite {
             color: Color::WHITE,
-            custom_size: Some(ground_size),
+            custom_size: Some(block_size),
             ..Default::default()
         },
-        Transform::from_xyz(0.0, -200.0, 0.0),
+        Transform::from_translation(pos),
         GlobalTransform::default(),
     ));
-    commands.insert_resource(WorldBounds {
-        min: Vec2::new(-500.0, -300.0),
-        max: Vec2::new(500.0, 300.0),
-    });
+}
+
+pub fn save_level(level_data: Res<LevelData>) {
+    save_level_data(level_data.clone(), None);
+}
+
+fn save_level_data(level_data: LevelData, filename: Option<&str>) {
+    if let Ok(serialised_level_data) = serde_json::to_string(&level_data) {
+        match fs::write(
+            format!("assets/levels/{}.json", filename.map_or("level", |v| v)),
+            serialised_level_data,
+        ) {
+            Ok(_) => {}
+            Err(e) => println!("Error occurred while serialising level: {}", e),
+        }
+    }
+}
+
+fn can_merge_horizontally(a: &Block, b: &Block) -> bool {
+    // Note: a block's x position is its centre => half of its size in the x dimension is to the left, half to the right
+    a.pos.y == b.pos.y
+        && a.size.y == b.size.y
+        && (a.pos.x + (a.size.x / 2.0) == (b.pos.x - (b.size.x / 2.0)))
+        && a.block_type == b.block_type
+}
+
+fn merge_horizontally(a: &Block, b: &Block) -> Block {
+    let left = (a.pos.x - a.size.x / 2.0).min(b.pos.x - b.size.x / 2.0);
+    let right = (a.pos.x + a.size.x / 2.0).max(b.pos.x + b.size.x / 2.0);
+    let new_size = Vec2::new(right - left, a.size.y);
+    let new_pos = Vec3::new((left + right) / 2.0, a.pos.y, a.pos.z);
+    Block::new(new_pos, new_size, a.block_type.clone())
+}
+
+fn merge_blocks_horizontally(mut blocks: Vec<Block>) -> Vec<Block> {
+    let mut merged = true;
+
+    while merged {
+        merged = false;
+        'outer: for i in 0..blocks.len() {
+            for j in (i + 1)..blocks.len() {
+                if can_merge_horizontally(&blocks[i], &blocks[j]) {
+                    let new_block = merge_horizontally(&blocks[i], &blocks[j]);
+                    blocks.remove(j);
+                    blocks[i] = new_block;
+                    merged = true;
+                    break 'outer;
+                }
+            }
+        }
+    }
+    blocks
 }

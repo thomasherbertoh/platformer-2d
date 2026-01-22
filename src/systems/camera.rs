@@ -9,7 +9,7 @@ use bevy::{
     window::{Window, WindowResized},
 };
 
-use crate::{components::tags::Player, resources::world_bounds::WorldBounds};
+use crate::{components::tags::Player, resources::world::WorldBounds};
 
 pub fn spawn_camera(mut commands: Commands) {
     commands.spawn((

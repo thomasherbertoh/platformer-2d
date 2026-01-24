@@ -6,6 +6,7 @@ pub enum GameState {
     SplashScreen,
     MainMenu,
     Playing,
+    Win,
     Paused,
     GameOver,
 }

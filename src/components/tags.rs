@@ -22,6 +22,15 @@ pub struct OnGround(pub bool);
 #[derive(Component)]
 pub struct FootSensor;
 
+#[derive(Component)]
+pub struct EndGate;
+
+#[derive(Component)]
+pub struct World;
+
+#[derive(Component)]
+pub struct WinEntity;
+
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub enum BlockType {
     #[default]

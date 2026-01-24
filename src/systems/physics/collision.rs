@@ -1,13 +1,17 @@
-use bevy::ecs::{
-    message::MessageReader,
-    query::With,
-    system::{Query, Res, ResMut},
+use bevy::{
+    ecs::{
+        message::MessageReader,
+        query::With,
+        system::{Query, Res, ResMut},
+    },
+    state::state::NextState,
 };
 use bevy_rapier2d::prelude::{CollidingEntities, CollisionEvent, Velocity};
 
 use crate::{
-    components::tags::{FootSensor, OnGround, Player},
+    components::tags::{EndGate, FootSensor, OnGround, Player},
     resources::ground_contacts::GroundContacts,
+    states::GameState,
 };
 
 pub fn foot_sensor_collision_system(
@@ -63,5 +67,21 @@ pub fn ground_detection_system(
 
     if let Ok(mut on_ground) = query.single_mut() {
         on_ground.0 = grounded;
+    }
+}
+
+pub fn end_gate_collision_system(
+    mut collision_events: MessageReader<CollisionEvent>,
+    end_gate: Query<(), With<EndGate>>,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
+    for collision_event in collision_events.read() {
+        if let CollisionEvent::Started(e1, e2, _) = collision_event {
+            // if the end_gate is being collided with then we win
+            // presumably this will break if other stuff collides with the end gate
+            if end_gate.get(*e1).is_ok() || end_gate.get(*e2).is_ok() {
+                next_state.set(GameState::Win);
+            }
+        };
     }
 }

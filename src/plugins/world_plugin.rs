@@ -10,7 +10,7 @@ use crate::{
     resources::world::{LevelData, WorldBounds},
     states::GameState,
     systems::{
-        camera::{center_camera_on_world, spawn_camera, update_camera_projection_on_resize},
+        camera::{center_camera_on_world, spawn_world_camera, update_camera_projection_on_resize},
         world::{build_world, save_level},
     },
 };
@@ -46,6 +46,11 @@ impl Plugin for WorldPlugin {
             Vec2::new(10.0, 10.0),
             BlockType::PlayerSpawn,
         ));
+        blocks.push(Block::new(
+            Vec3::new(190.0, 67.5, 0.0),
+            Vec2::new(10.0, 10.0),
+            BlockType::End,
+        ));
         app.insert_resource(WorldBounds {
             min: Vec2::new(-500.0, -300.0),
             max: Vec2::new(500.0, 300.0),
@@ -53,7 +58,7 @@ impl Plugin for WorldPlugin {
         .insert_resource(LevelData { blocks })
         .add_systems(
             OnEnter(GameState::Playing),
-            (save_level, build_world, spawn_camera),
+            (save_level, build_world, spawn_world_camera),
         )
         .add_systems(
             Update,

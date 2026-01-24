@@ -9,11 +9,15 @@ use bevy::{
     window::{Window, WindowResized},
 };
 
-use crate::{components::tags::Player, resources::world::WorldBounds};
+use crate::{
+    components::tags::{Player, World},
+    resources::world::WorldBounds,
+};
 
-pub fn spawn_camera(mut commands: Commands) {
+pub fn spawn_world_camera(mut commands: Commands) {
     commands.spawn((
         Camera2d,
+        World,
         Camera::default(),
         Projection::Orthographic(OrthographicProjection {
             // I think this is what causes the world resizing bug when you move the game from one size window to another - the size is calculated differently later

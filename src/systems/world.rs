@@ -2,7 +2,11 @@ use std::fs;
 
 use bevy::{
     color::Color,
-    ecs::system::{Commands, Res},
+    ecs::{
+        entity::Entity,
+        query::With,
+        system::{Commands, Query, Res},
+    },
     math::{Vec2, Vec3},
     sprite::Sprite,
     transform::components::{GlobalTransform, Transform},
@@ -15,7 +19,7 @@ use crate::{
     components::tags::{
         Block,
         BlockType::{End, Floor, PlayerSpawn},
-        FootSensor, Ground, OnGround, Player,
+        EndGate, FootSensor, Ground, OnGround, Player, World,
     },
     resources::world::LevelData,
 };
@@ -39,7 +43,7 @@ pub fn build_world(mut commands: Commands, level_data: Res<LevelData>) {
         match block.block_type {
             Floor => spawn_block(&mut commands, block.pos, block.size),
             PlayerSpawn => spawn_player(&mut commands, block.pos),
-            End => todo!(),
+            End => spawn_level_end(&mut commands, block.pos),
         }
     }
 
@@ -51,6 +55,7 @@ fn spawn_player(commands: &mut Commands, pos: Vec3) {
     commands
         .spawn((
             Player,
+            World,
             OnGround(false),
             RigidBody::Dynamic,
             LockedAxes::ROTATION_LOCKED,
@@ -69,6 +74,7 @@ fn spawn_player(commands: &mut Commands, pos: Vec3) {
         .with_children(|parent| {
             parent.spawn((
                 FootSensor,
+                World,
                 Sensor,
                 Collider::cuboid(4.5, 1.0),
                 ActiveEvents::COLLISION_EVENTS,
@@ -78,9 +84,26 @@ fn spawn_player(commands: &mut Commands, pos: Vec3) {
         });
 }
 
+fn spawn_level_end(commands: &mut Commands, pos: Vec3) {
+    commands.spawn((
+        EndGate,
+        World,
+        Collider::cuboid(5.0, 12.5),
+        ActiveEvents::COLLISION_EVENTS,
+        Sprite {
+            color: Color::linear_rgba(0.4, 1.0, 0.5, 0.2),
+            custom_size: Some(Vec2::new(10.0, 25.0)),
+            ..Default::default()
+        },
+        Transform::from_translation(pos),
+        GlobalTransform::default(),
+    ));
+}
+
 fn spawn_block(commands: &mut Commands, pos: Vec3, block_size: Vec2) {
     commands.spawn((
         Ground,
+        World,
         Collider::cuboid(block_size.x / 2.0, block_size.y / 2.0),
         Sprite {
             color: Color::WHITE,
@@ -142,4 +165,10 @@ fn merge_blocks_horizontally(mut blocks: Vec<Block>) -> Vec<Block> {
         }
     }
     blocks
+}
+
+pub fn cleanup_world(mut commands: Commands, query: Query<Entity, With<World>>) {
+    for entity in &query {
+        commands.entity(entity).despawn();
+    }
 }

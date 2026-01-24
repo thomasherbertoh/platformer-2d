@@ -10,8 +10,8 @@ use crate::{
         camera::camera_follow_player,
         physics::{
             collision::{
-                clamp_velocity_when_grounded, foot_sensor_collision_system,
-                ground_detection_system, update_grounded_state,
+                clamp_velocity_when_grounded, end_gate_collision_system,
+                foot_sensor_collision_system, ground_detection_system, update_grounded_state,
             },
             movement::{jump_system, player_movement},
         },
@@ -25,7 +25,8 @@ impl Plugin for PlayerPlugin {
         app.add_systems(
             Update,
             (
-                (player_movement, jump_system).run_if(in_state(GameState::Playing)),
+                (player_movement, jump_system, end_gate_collision_system)
+                    .run_if(in_state(GameState::Playing)),
                 ground_detection_system,
                 foot_sensor_collision_system,
                 update_grounded_state,

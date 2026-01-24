@@ -15,6 +15,8 @@ use crate::{
     systems::{
         menu::{cleanup_menu, menu_button_system, setup_menu},
         splash::{cleanup_splash, setup_splash, splash_timer},
+        win::{cleanup_win, win_screen_system, win_timer},
+        world::cleanup_world,
     },
 };
 
@@ -29,11 +31,15 @@ impl Plugin for GamePlugin {
             .add_systems(OnExit(GameState::SplashScreen), cleanup_splash)
             .add_systems(OnEnter(GameState::MainMenu), setup_menu)
             .add_systems(OnExit(GameState::MainMenu), cleanup_menu)
+            .add_systems(OnExit(GameState::Playing), cleanup_world)
+            .add_systems(OnEnter(GameState::Win), win_screen_system)
+            .add_systems(OnExit(GameState::Win), cleanup_win)
             .add_systems(
                 Update,
                 (
                     splash_timer.run_if(in_state(GameState::SplashScreen)),
                     menu_button_system.run_if(in_state(GameState::MainMenu)),
+                    win_timer.run_if(in_state(GameState::Win)),
                 ),
             );
     }

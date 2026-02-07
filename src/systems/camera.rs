@@ -11,7 +11,7 @@ use bevy::{
 
 use crate::{
     components::tags::{Player, World},
-    resources::world::WorldBounds,
+    resources::world::LevelData,
 };
 
 pub fn spawn_world_camera(mut commands: Commands) {
@@ -32,11 +32,11 @@ pub fn spawn_world_camera(mut commands: Commands) {
 }
 
 pub fn center_camera_on_world(
-    bounds: Res<WorldBounds>,
+    level_data: Res<LevelData>,
     mut camera_query: Query<&mut Transform, With<Camera>>,
 ) {
     if let Ok(mut transform) = camera_query.single_mut() {
-        let center = (bounds.min + bounds.max) / 2.0;
+        let center = (level_data.world_bounds.min + level_data.world_bounds.max) / 2.0;
         transform.translation.x = center.x;
         transform.translation.y = center.y;
     }
@@ -45,7 +45,7 @@ pub fn center_camera_on_world(
 pub fn update_camera_projection_on_resize(
     resize_events: MessageReader<WindowResized>,
     windows: Query<&Window>,
-    bounds: Res<WorldBounds>,
+    level_data: Res<LevelData>,
     mut query: Query<&mut Projection, With<Camera2d>>,
 ) {
     if resize_events.is_empty() {
@@ -55,7 +55,7 @@ pub fn update_camera_projection_on_resize(
     if let Ok(window) = windows.single()
         && let Ok(mut projection) = query.single_mut()
     {
-        let world_height = bounds.max.y - bounds.min.y;
+        let world_height = level_data.world_bounds.max.y - level_data.world_bounds.min.y;
 
         if let Projection::Orthographic(ref mut ortho) = *projection {
             ortho.scale = world_height / window.resolution.height();

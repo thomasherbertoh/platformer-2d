@@ -51,11 +51,14 @@ impl Plugin for WorldPlugin {
             Vec2::new(10.0, 10.0),
             BlockType::End,
         ));
-        app.insert_resource(WorldBounds {
-            min: Vec2::new(-500.0, -300.0),
-            max: Vec2::new(500.0, 300.0),
+
+        app.insert_resource(LevelData {
+            blocks,
+            world_bounds: WorldBounds {
+                min: Vec2::new(-500.0, -300.0),
+                max: Vec2::new(500.0, 300.0),
+            },
         })
-        .insert_resource(LevelData { blocks })
         .add_systems(
             OnEnter(GameState::Playing),
             (save_level, build_world, spawn_world_camera),

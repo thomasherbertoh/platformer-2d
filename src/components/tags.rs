@@ -31,6 +31,9 @@ pub struct World;
 #[derive(Component)]
 pub struct WinEntity;
 
+#[derive(Component)]
+pub struct WorldBoundary;
+
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub enum BlockType {
     #[default]

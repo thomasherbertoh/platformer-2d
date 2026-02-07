@@ -5,7 +5,7 @@ use bevy::{
     ecs::{
         entity::Entity,
         query::With,
-        system::{Commands, Query, Res},
+        system::{Commands, Query, Res, ResMut},
     },
     math::{Vec2, Vec3},
     sprite::Sprite,
@@ -19,12 +19,67 @@ use crate::{
     components::tags::{
         Block,
         BlockType::{End, Floor, PlayerSpawn},
-        EndGate, FootSensor, Ground, OnGround, Player, World,
+        EndGate, FootSensor, Ground, OnGround, Player, World, WorldBoundary,
     },
-    resources::world::LevelData,
+    resources::world::{LevelData, WorldBounds},
 };
 
-pub fn build_world(mut commands: Commands, level_data: Res<LevelData>) {
+pub fn build_world(mut commands: Commands, mut level_data: ResMut<LevelData>) {
+    merge_blocks(&mut level_data);
+
+    for block in &level_data.blocks {
+        match block.block_type {
+            Floor => spawn_block(&mut commands, block.pos, block.size),
+            PlayerSpawn => spawn_player(&mut commands, block.pos),
+            End => spawn_level_end(&mut commands, block.pos),
+        }
+    }
+
+    spawn_world_boundaries(&mut commands, &level_data.world_bounds);
+
+    // save the processed level
+    save_level_data(&level_data, Some("level-processed"));
+}
+
+fn spawn_world_boundaries(commands: &mut Commands, bounds: &WorldBounds) {
+    // bottom boundary - placed at min y, stretched between min x and max x
+    commands.spawn((
+        WorldBoundary,
+        World,
+        Collider::cuboid((bounds.max.x - bounds.min.x) / 2.0, 5.0),
+        Transform::from_xyz(0.0, bounds.min.y, 0.0),
+        GlobalTransform::default(),
+    ));
+
+    // top boundary - placed at max y, stretched between min x and max x
+    commands.spawn((
+        WorldBoundary,
+        World,
+        Collider::cuboid((bounds.max.x - bounds.min.x) / 2.0, 5.0),
+        Transform::from_xyz(0.0, bounds.max.y, 0.0),
+        GlobalTransform::default(),
+    ));
+
+    // left boundary - placed at min x, stretched between min y and max y
+    commands.spawn((
+        WorldBoundary,
+        World,
+        Collider::cuboid(5.0, (bounds.max.y - bounds.min.y) / 2.0),
+        Transform::from_xyz(bounds.min.x, 0.0, 0.0),
+        GlobalTransform::default(),
+    ));
+
+    // right boundary - placed at max x, stretched between min y and max y
+    commands.spawn((
+        WorldBoundary,
+        World,
+        Collider::cuboid(5.0, (bounds.max.y - bounds.min.y) / 2.0),
+        Transform::from_xyz(bounds.max.x, 0.0, 0.0),
+        GlobalTransform::default(),
+    ));
+}
+
+fn merge_blocks(level_data: &mut ResMut<LevelData>) {
     let mut floor_blocks = Vec::new();
     let mut non_floor_blocks = Vec::new();
 
@@ -38,17 +93,7 @@ pub fn build_world(mut commands: Commands, level_data: Res<LevelData>) {
 
     let mut blocks = merge_blocks_horizontally(floor_blocks);
     blocks.extend(non_floor_blocks);
-
-    for block in &blocks {
-        match block.block_type {
-            Floor => spawn_block(&mut commands, block.pos, block.size),
-            PlayerSpawn => spawn_player(&mut commands, block.pos),
-            End => spawn_level_end(&mut commands, block.pos),
-        }
-    }
-
-    // save the processed level
-    save_level_data(LevelData { blocks }, Some("level-processed"));
+    level_data.blocks = blocks;
 }
 
 fn spawn_player(commands: &mut Commands, pos: Vec3) {
@@ -116,10 +161,10 @@ fn spawn_block(commands: &mut Commands, pos: Vec3, block_size: Vec2) {
 }
 
 pub fn save_level(level_data: Res<LevelData>) {
-    save_level_data(level_data.clone(), None);
+    save_level_data(&level_data, None);
 }
 
-fn save_level_data(level_data: LevelData, filename: Option<&str>) {
+fn save_level_data(level_data: &LevelData, filename: Option<&str>) {
     if let Ok(serialised_level_data) = serde_json::to_string(&level_data) {
         match fs::write(
             format!("assets/levels/{}.json", filename.map_or("level", |v| v)),

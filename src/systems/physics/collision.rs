@@ -9,7 +9,7 @@ use bevy::{
 use bevy_rapier2d::prelude::{CollidingEntities, CollisionEvent, Velocity};
 
 use crate::{
-    components::tags::{EndGate, FootSensor, OnGround, Player},
+    components::tags::{EndGate, FootSensor, OnGround, Player, WorldBoundary},
     resources::ground_contacts::GroundContacts,
     states::GameState,
 };
@@ -83,5 +83,25 @@ pub fn end_gate_collision_system(
                 next_state.set(GameState::Win);
             }
         };
+    }
+}
+
+pub fn world_boundary_collision_system(
+    mut collision_events: MessageReader<CollisionEvent>,
+    players: Query<(), With<Player>>,
+    bounds: Query<(), With<WorldBoundary>>,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
+    for collision_event in collision_events.read() {
+        let CollisionEvent::Started(e1, e2, _) = collision_event else {
+            continue;
+        };
+
+        let player_hit_boundary = (players.get(*e1).is_ok() && bounds.get(*e2).is_ok())
+            || (players.get(*e2).is_ok() && bounds.get(*e1).is_ok());
+
+        if player_hit_boundary {
+            next_state.set(GameState::GameOver);
+        }
     }
 }

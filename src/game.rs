@@ -13,7 +13,7 @@ use crate::{
     resources::ground_contacts::GroundContacts,
     states::GameState,
     systems::{
-        menu::{cleanup_menu, menu_button_system, setup_menu},
+        main_menu::{cleanup_menu, menu_button_system, setup_menu},
         splash::{cleanup_splash, setup_splash, splash_timer},
         win::{cleanup_win, win_screen_system, win_timer},
         world::cleanup_world,

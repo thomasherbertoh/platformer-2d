@@ -4,6 +4,7 @@ mod plugins;
 mod resources;
 mod states;
 mod systems;
+mod ui;
 
 use crate::game::GamePlugin;
 use bevy::{DefaultPlugins, app::App};

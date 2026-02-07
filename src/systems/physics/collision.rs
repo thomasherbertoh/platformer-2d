@@ -11,7 +11,7 @@ use bevy_rapier2d::prelude::{CollidingEntities, CollisionEvent, Velocity};
 use crate::{
     components::tags::{EndGate, FootSensor, OnGround, Player, WorldBoundary},
     resources::ground_contacts::GroundContacts,
-    states::GameState,
+    states::{GameState, MenuState},
 };
 
 pub fn foot_sensor_collision_system(
@@ -90,7 +90,8 @@ pub fn world_boundary_collision_system(
     mut collision_events: MessageReader<CollisionEvent>,
     players: Query<(), With<Player>>,
     bounds: Query<(), With<WorldBoundary>>,
-    mut next_state: ResMut<NextState<GameState>>,
+    mut game_state: ResMut<NextState<GameState>>,
+    mut menu_state: ResMut<NextState<MenuState>>,
 ) {
     for collision_event in collision_events.read() {
         let CollisionEvent::Started(e1, e2, _) = collision_event else {
@@ -101,7 +102,8 @@ pub fn world_boundary_collision_system(
             || (players.get(*e2).is_ok() && bounds.get(*e1).is_ok());
 
         if player_hit_boundary {
-            next_state.set(GameState::GameOver);
+            game_state.set(GameState::Menu);
+            menu_state.set(MenuState::GameOver);
         }
     }
 }

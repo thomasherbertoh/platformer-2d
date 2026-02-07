@@ -13,7 +13,11 @@ use bevy::{
     ui::{Node, UiRect, Val, widget::Text},
 };
 
-use crate::{components::tags::SplashEntity, resources::splash::SplashTimer, states::GameState};
+use crate::{
+    components::tags::SplashEntity,
+    resources::splash::SplashTimer,
+    states::{GameState, MenuState},
+};
 
 pub fn setup_splash(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.insert_resource(SplashTimer(Timer::from_seconds(3.0, Once)));
@@ -37,11 +41,13 @@ pub fn setup_splash(mut commands: Commands, asset_server: Res<AssetServer>) {
 pub fn splash_timer(
     time: Res<Time>,
     mut timer: ResMut<SplashTimer>,
-    mut next_state: ResMut<NextState<GameState>>,
+    mut game_state: ResMut<NextState<GameState>>,
+    mut menu_state: ResMut<NextState<MenuState>>,
 ) {
     timer.0.tick(time.delta());
     if timer.0.is_finished() {
-        next_state.set(GameState::MainMenu);
+        game_state.set(GameState::Menu);
+        menu_state.set(MenuState::Main);
     }
 }
 

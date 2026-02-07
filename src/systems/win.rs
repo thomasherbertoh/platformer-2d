@@ -13,7 +13,11 @@ use bevy::{
     ui::{Node, UiRect, Val, widget::Text},
 };
 
-use crate::{components::tags::WinEntity, resources::win::WinTimer, states::GameState};
+use crate::{
+    components::tags::WinEntity,
+    resources::win::WinTimer,
+    states::{GameState, MenuState},
+};
 
 pub fn win_screen_system(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.insert_resource(WinTimer(Timer::from_seconds(3.0, TimerMode::Once)));
@@ -37,11 +41,13 @@ pub fn win_screen_system(mut commands: Commands, asset_server: Res<AssetServer>)
 pub fn win_timer(
     time: Res<Time>,
     mut timer: ResMut<WinTimer>,
-    mut next_state: ResMut<NextState<GameState>>,
+    mut game_state: ResMut<NextState<GameState>>,
+    mut menu_state: ResMut<NextState<MenuState>>,
 ) {
     timer.0.tick(time.delta());
     if timer.0.is_finished() {
-        next_state.set(GameState::MainMenu);
+        game_state.set(GameState::Menu);
+        menu_state.set(MenuState::Main);
     }
 }
 

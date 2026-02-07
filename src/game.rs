@@ -9,11 +9,10 @@ use bevy::{
 };
 
 use crate::{
-    plugins::{player_plugin::PlayerPlugin, world_plugin::WorldPlugin},
+    plugins::{menu_plugin::MenuPlugin, player_plugin::PlayerPlugin, world_plugin::WorldPlugin},
     resources::ground_contacts::GroundContacts,
     states::GameState,
     systems::{
-        main_menu::{cleanup_menu, menu_button_system, setup_menu},
         splash::{cleanup_splash, setup_splash, splash_timer},
         win::{cleanup_win, win_screen_system, win_timer},
         world::cleanup_world,
@@ -26,11 +25,9 @@ impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.insert_state(GameState::default())
             .init_resource::<GroundContacts>()
-            .add_plugins((PlayerPlugin, WorldPlugin))
+            .add_plugins((MenuPlugin, PlayerPlugin, WorldPlugin))
             .add_systems(OnEnter(GameState::SplashScreen), setup_splash)
             .add_systems(OnExit(GameState::SplashScreen), cleanup_splash)
-            .add_systems(OnEnter(GameState::MainMenu), setup_menu)
-            .add_systems(OnExit(GameState::MainMenu), cleanup_menu)
             .add_systems(OnExit(GameState::Playing), cleanup_world)
             .add_systems(OnEnter(GameState::Win), win_screen_system)
             .add_systems(OnExit(GameState::Win), cleanup_win)
@@ -38,7 +35,6 @@ impl Plugin for GamePlugin {
                 Update,
                 (
                     splash_timer.run_if(in_state(GameState::SplashScreen)),
-                    menu_button_system.run_if(in_state(GameState::MainMenu)),
                     win_timer.run_if(in_state(GameState::Win)),
                 ),
             );

@@ -34,6 +34,9 @@ pub struct WinEntity;
 #[derive(Component)]
 pub struct WorldBoundary;
 
+#[derive(Component)]
+pub struct GameOverMenuUI;
+
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub enum BlockType {
     #[default]

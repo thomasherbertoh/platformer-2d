@@ -1,5 +1,5 @@
 pub mod camera;
-pub mod menu;
+pub mod main_menu;
 pub mod physics;
 pub mod splash;
 pub mod win;

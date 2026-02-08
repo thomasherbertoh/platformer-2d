@@ -10,7 +10,7 @@ use bevy::{
 };
 
 use crate::{
-    components::tags::Player,
+    player::components::Player,
     world::{components::World, resources::LevelData},
 };
 

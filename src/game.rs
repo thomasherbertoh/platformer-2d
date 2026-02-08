@@ -9,8 +9,8 @@ use bevy::{
 };
 
 use crate::{
-    plugins::{menu_plugin::MenuPlugin, player_plugin::PlayerPlugin},
-    resources::ground_contacts::GroundContacts,
+    player::{plugin::PlayerPlugin, resources::GroundContacts},
+    plugins::menu_plugin::MenuPlugin,
     states::GameState,
     systems::ui::{
         splash::{cleanup_splash, setup_splash, splash_timer},

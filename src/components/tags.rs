@@ -7,15 +7,6 @@ pub struct SplashEntity;
 pub struct MenuUI;
 
 #[derive(Component)]
-pub struct Player;
-
-#[derive(Component)]
-pub struct OnGround(pub bool);
-
-#[derive(Component)]
-pub struct FootSensor;
-
-#[derive(Component)]
 pub struct WinEntity;
 
 #[derive(Component)]

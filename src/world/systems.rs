@@ -16,7 +16,7 @@ use bevy_rapier2d::prelude::{
 };
 
 use crate::{
-    components::tags::{FootSensor, OnGround, Player},
+    player::components::{FootSensor, OnGround, Player},
     world::{
         components::{Block, BlockType, EndGate, Ground, World, WorldBoundary},
         resources::{LevelData, WorldBounds},

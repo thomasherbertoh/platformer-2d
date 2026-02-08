@@ -9,8 +9,10 @@ use bevy::{
 use bevy_rapier2d::prelude::{CollidingEntities, CollisionEvent, Velocity};
 
 use crate::{
-    components::tags::{FootSensor, OnGround, Player},
-    resources::ground_contacts::GroundContacts,
+    player::{
+        components::{FootSensor, OnGround, Player},
+        resources::GroundContacts,
+    },
     states::{GameState, MenuState},
     world::components::{EndGate, WorldBoundary},
 };

@@ -5,6 +5,7 @@ use bevy::{
 };
 
 use crate::{
+    camera::systems::camera_follow_player,
     player::systems::{
         collision::{
             clamp_velocity_when_grounded, end_gate_collision_system, foot_sensor_collision_system,
@@ -13,7 +14,6 @@ use crate::{
         movement::{jump_system, player_movement},
     },
     states::GameState,
-    systems::camera::camera_follow_player,
 };
 
 pub struct PlayerPlugin;

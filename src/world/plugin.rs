@@ -6,10 +6,10 @@ use bevy::{
 };
 
 use crate::{
-    states::GameState,
-    systems::camera::{
+    camera::systems::{
         center_camera_on_world, spawn_world_camera, update_camera_projection_on_resize,
     },
+    states::GameState,
     world::{
         components::{Block, BlockType},
         resources::{LevelData, WorldBounds},

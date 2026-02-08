@@ -9,11 +9,11 @@ use bevy::{
 use bevy_rapier2d::prelude::{CollidingEntities, CollisionEvent, Velocity};
 
 use crate::{
+    game::states::{GameState, MenuState},
     player::{
         components::{FootSensor, OnGround, Player},
         resources::GroundContacts,
     },
-    states::{GameState, MenuState},
     world::components::{EndGate, WorldBoundary},
 };
 

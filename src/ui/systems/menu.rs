@@ -20,7 +20,7 @@ use bevy::{
 };
 
 use crate::{
-    states::{GameState, MenuState},
+    game::states::{GameState, MenuState},
     ui::components::MenuAction,
 };
 

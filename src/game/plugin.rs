@@ -9,8 +9,8 @@ use bevy::{
 };
 
 use crate::{
+    game::states::GameState,
     player::{plugin::PlayerPlugin, resources::GroundContacts},
-    states::GameState,
     ui::{
         plugins::menu::MenuPlugin,
         systems::{

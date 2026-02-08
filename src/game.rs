@@ -9,14 +9,14 @@ use bevy::{
 };
 
 use crate::{
-    plugins::{menu_plugin::MenuPlugin, player_plugin::PlayerPlugin, world_plugin::WorldPlugin},
+    plugins::{menu_plugin::MenuPlugin, player_plugin::PlayerPlugin},
     resources::ground_contacts::GroundContacts,
     states::GameState,
-    systems::{
+    systems::ui::{
         splash::{cleanup_splash, setup_splash, splash_timer},
         win::{cleanup_win, win_screen_system, win_timer},
-        world::cleanup_world,
     },
+    world::{plugin::WorldPlugin, systems::cleanup_world},
 };
 
 pub struct GamePlugin;

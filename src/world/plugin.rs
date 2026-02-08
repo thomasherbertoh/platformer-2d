@@ -6,12 +6,14 @@ use bevy::{
 };
 
 use crate::{
-    components::tags::{Block, BlockType},
-    resources::world::{LevelData, WorldBounds},
     states::GameState,
-    systems::{
-        camera::{center_camera_on_world, spawn_world_camera, update_camera_projection_on_resize},
-        world::{build_world, save_level},
+    systems::camera::{
+        center_camera_on_world, spawn_world_camera, update_camera_projection_on_resize,
+    },
+    world::{
+        components::{Block, BlockType},
+        resources::{LevelData, WorldBounds},
+        systems::{build_world, save_level},
     },
 };
 

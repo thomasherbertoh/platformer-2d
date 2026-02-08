@@ -1,7 +1,7 @@
 use bevy::{ecs::resource::Resource, math::Vec2};
 use serde::{Deserialize, Serialize};
 
-use crate::components::tags::Block;
+use crate::world::components::Block;
 
 #[derive(Clone, Deserialize, Resource, Serialize)]
 pub struct WorldBounds {

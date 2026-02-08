@@ -16,12 +16,11 @@ use bevy_rapier2d::prelude::{
 };
 
 use crate::{
-    components::tags::{
-        Block,
-        BlockType::{End, Floor, PlayerSpawn},
-        EndGate, FootSensor, Ground, OnGround, Player, World, WorldBoundary,
+    components::tags::{FootSensor, OnGround, Player},
+    world::{
+        components::{Block, BlockType, EndGate, Ground, World, WorldBoundary},
+        resources::{LevelData, WorldBounds},
     },
-    resources::world::{LevelData, WorldBounds},
 };
 
 pub fn build_world(mut commands: Commands, mut level_data: ResMut<LevelData>) {
@@ -29,9 +28,9 @@ pub fn build_world(mut commands: Commands, mut level_data: ResMut<LevelData>) {
 
     for block in &level_data.blocks {
         match block.block_type {
-            Floor => spawn_block(&mut commands, block.pos, block.size),
-            PlayerSpawn => spawn_player(&mut commands, block.pos),
-            End => spawn_level_end(&mut commands, block.pos),
+            BlockType::Floor => spawn_block(&mut commands, block.pos, block.size),
+            BlockType::PlayerSpawn => spawn_player(&mut commands, block.pos),
+            BlockType::End => spawn_level_end(&mut commands, block.pos),
         }
     }
 
@@ -87,7 +86,7 @@ fn merge_blocks(level_data: &mut ResMut<LevelData>) {
         .blocks
         .iter()
         .for_each(|block| match block.block_type {
-            Floor => floor_blocks.push(block.clone()),
+            BlockType::Floor => floor_blocks.push(block.clone()),
             _ => non_floor_blocks.push(block.clone()),
         });
 

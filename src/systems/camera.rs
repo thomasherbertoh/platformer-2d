@@ -10,8 +10,8 @@ use bevy::{
 };
 
 use crate::{
-    components::tags::{Player, World},
-    resources::world::LevelData,
+    components::tags::Player,
+    world::{components::World, resources::LevelData},
 };
 
 pub fn spawn_world_camera(mut commands: Commands) {

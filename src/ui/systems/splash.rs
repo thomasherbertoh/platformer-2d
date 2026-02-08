@@ -9,22 +9,21 @@ use bevy::{
     },
     state::state::NextState,
     text::{TextColor, TextFont},
-    time::{Time, Timer, TimerMode},
+    time::{Time, Timer, TimerMode::Once},
     ui::{Node, UiRect, Val, widget::Text},
 };
 
 use crate::{
-    components::tags::WinEntity,
-    resources::win::WinTimer,
-    states::{GameState, MenuState},
+    game::states::{GameState, MenuState},
+    ui::{components::SplashEntity, resources::SplashTimer},
 };
 
-pub fn win_screen_system(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.insert_resource(WinTimer(Timer::from_seconds(3.0, TimerMode::Once)));
+pub fn setup_splash(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands.insert_resource(SplashTimer(Timer::from_seconds(3.0, Once)));
     commands.spawn((
         Camera2d,
-        WinEntity,
-        Text::new("win"),
+        SplashEntity,
+        Text::new("2D Platformer B-)"),
         TextFont {
             font: asset_server.load("fonts/Roboto-Regular.ttf"),
             font_size: 64.0,
@@ -38,9 +37,9 @@ pub fn win_screen_system(mut commands: Commands, asset_server: Res<AssetServer>)
     ));
 }
 
-pub fn win_timer(
+pub fn splash_timer(
     time: Res<Time>,
-    mut timer: ResMut<WinTimer>,
+    mut timer: ResMut<SplashTimer>,
     mut game_state: ResMut<NextState<GameState>>,
     mut menu_state: ResMut<NextState<MenuState>>,
 ) {
@@ -51,7 +50,7 @@ pub fn win_timer(
     }
 }
 
-pub fn cleanup_win(mut commands: Commands, query: Query<Entity, With<WinEntity>>) {
+pub fn cleanup_splash(mut commands: Commands, query: Query<Entity, With<SplashEntity>>) {
     for entity in &query {
         commands.entity(entity).despawn();
     }

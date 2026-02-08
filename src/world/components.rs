@@ -5,37 +5,16 @@ use bevy::{
 use serde::{Deserialize, Serialize};
 
 #[derive(Component)]
-pub struct SplashEntity;
-
-#[derive(Component)]
-pub struct MenuUI;
-
-#[derive(Component)]
-pub struct Player;
+pub struct EndGate;
 
 #[derive(Component)]
 pub struct Ground;
 
 #[derive(Component)]
-pub struct OnGround(pub bool);
-
-#[derive(Component)]
-pub struct FootSensor;
-
-#[derive(Component)]
-pub struct EndGate;
-
-#[derive(Component)]
 pub struct World;
 
 #[derive(Component)]
-pub struct WinEntity;
-
-#[derive(Component)]
 pub struct WorldBoundary;
-
-#[derive(Component)]
-pub struct GameOverMenuUI;
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub enum BlockType {

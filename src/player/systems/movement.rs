@@ -7,7 +7,7 @@ use bevy::{
 };
 use bevy_rapier2d::prelude::Velocity;
 
-use crate::components::tags::{OnGround, Player};
+use crate::player::components::{OnGround, Player};
 
 pub fn player_movement(
     keyboard: Res<ButtonInput<KeyCode>>,

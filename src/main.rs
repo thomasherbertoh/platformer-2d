@@ -1,14 +1,13 @@
-mod components;
+mod camera;
 mod game;
-mod plugins;
-mod resources;
-mod states;
-mod systems;
+mod player;
 mod ui;
+mod world;
 
-use crate::game::GamePlugin;
 use bevy::{DefaultPlugins, app::App};
 use bevy_rapier2d::plugin::{NoUserData, RapierPhysicsPlugin};
+
+use crate::game::plugin::GamePlugin;
 
 fn main() {
     App::new()

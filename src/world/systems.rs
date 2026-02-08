@@ -16,12 +16,15 @@ use bevy_rapier2d::prelude::{
 };
 
 use crate::{
-    components::tags::{
-        Block,
-        BlockType::{End, Floor, PlayerSpawn},
-        EndGate, FootSensor, Ground, OnGround, Player, World, WorldBoundary,
+    player::components::{FootSensor, OnGround, Player},
+    world::{
+        components::{
+            Block,
+            BlockType::{End, Floor, PlayerSpawn},
+            EndGate, Ground, World, WorldBoundary,
+        },
+        resources::{LevelData, WorldBounds},
     },
-    resources::world::{LevelData, WorldBounds},
 };
 
 pub fn build_world(mut commands: Commands, mut level_data: ResMut<LevelData>) {

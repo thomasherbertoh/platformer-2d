@@ -10,11 +10,13 @@ use bevy::{
 
 use crate::{
     player::{plugin::PlayerPlugin, resources::GroundContacts},
-    plugins::menu_plugin::MenuPlugin,
     states::GameState,
-    systems::ui::{
-        splash::{cleanup_splash, setup_splash, splash_timer},
-        win::{cleanup_win, win_screen_system, win_timer},
+    ui::{
+        plugins::menu::MenuPlugin,
+        systems::{
+            splash::{cleanup_splash, setup_splash, splash_timer},
+            win::{cleanup_win, win_screen_system, win_timer},
+        },
     },
     world::{plugin::WorldPlugin, systems::cleanup_world},
 };

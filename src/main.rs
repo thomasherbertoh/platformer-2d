@@ -1,8 +1,5 @@
-mod components;
 mod game;
 mod player;
-mod plugins;
-mod resources;
 mod states;
 mod systems;
 mod ui;

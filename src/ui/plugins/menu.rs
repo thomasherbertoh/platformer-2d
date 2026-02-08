@@ -9,10 +9,15 @@ use bevy::{
 };
 
 use crate::{
-    components::tags::{GameOverMenuUI, MenuUI},
     states::{GameState, MenuState},
-    systems::ui::{game_over_menu::spawn_game_over_menu, main_menu::spawn_main_menu},
-    ui::menu::{despawn_with, menu_button_system},
+    ui::{
+        components::{GameOverMenuUI, MenuUI},
+        systems::{
+            game_over_menu::spawn_game_over_menu,
+            main_menu::spawn_main_menu,
+            menu::{despawn_with, menu_button_system},
+        },
+    },
 };
 
 pub struct MenuPlugin;

@@ -19,14 +19,10 @@ use bevy::{
     },
 };
 
-use crate::states::{GameState, MenuState};
-
-#[derive(Component)]
-pub enum MenuAction {
-    Play,
-    Quit,
-    BackToMainMenu,
-}
+use crate::{
+    states::{GameState, MenuState},
+    ui::components::MenuAction,
+};
 
 // Type denoting buttons that have been interacted with this frame (hover or press)
 type ButtonsInteractedWith = (Changed<Interaction>, With<Button>);

@@ -14,9 +14,8 @@ use bevy::{
 };
 
 use crate::{
-    components::tags::WinEntity,
-    resources::win::WinTimer,
     states::{GameState, MenuState},
+    ui::{components::WinEntity, resources::WinTimer},
 };
 
 pub fn win_screen_system(mut commands: Commands, asset_server: Res<AssetServer>) {

@@ -14,15 +14,15 @@ use bevy::{
 };
 
 use crate::{
-    components::tags::SplashEntity,
-    resources::splash::SplashTimer,
     states::{GameState, MenuState},
+    ui::{components::SplashEntity, resources::SplashTimer},
 };
 
 pub fn setup_splash(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.insert_resource(SplashTimer(Timer::from_seconds(3.0, Once)));
-    commands.spawn((Camera2d, SplashEntity));
     commands.spawn((
+        Camera2d,
+        SplashEntity,
         Text::new("2D Platformer B-)"),
         TextFont {
             font: asset_server.load("fonts/Roboto-Regular.ttf"),
@@ -34,7 +34,6 @@ pub fn setup_splash(mut commands: Commands, asset_server: Res<AssetServer>) {
             margin: UiRect::all(Val::Auto),
             ..Default::default()
         },
-        SplashEntity,
     ));
 }
 

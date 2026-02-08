@@ -7,14 +7,12 @@ use bevy::{
     ui::{AlignItems, BackgroundColor, FlexDirection, JustifyContent, Node, Val},
 };
 
-use crate::{
-    components::tags::MenuUI,
-    ui::menu::{MenuAction, spawn_button},
+use crate::ui::{
+    components::{GameOverMenuUI, MenuAction},
+    systems::menu::spawn_button,
 };
 
-/// TODO: the styling here is duplicated in game_over_menu - the two menus should only specify what
-/// buttons they contain, styling should be universal for menus
-pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn spawn_game_over_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     let font: Handle<Font> = asset_server.load("fonts/Roboto-Regular.ttf");
 
     commands
@@ -29,7 +27,7 @@ pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                 ..Default::default()
             },
             BackgroundColor(Color::srgb(0.1, 0.1, 0.15)),
-            MenuUI,
+            GameOverMenuUI,
         ))
         .with_children(|parent| {
             parent
@@ -45,8 +43,8 @@ pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
                     BackgroundColor(Color::srgb(0.2, 0.2, 0.3)),
                 ))
                 .with_children(|menu| {
-                    spawn_button(menu, &font, "Play", MenuAction::Play);
-                    spawn_button(menu, &font, "Quit", MenuAction::Quit);
+                    spawn_button(menu, &font, "Retry", MenuAction::Play);
+                    spawn_button(menu, &font, "Main Menu", MenuAction::BackToMainMenu);
                 });
         });
 }

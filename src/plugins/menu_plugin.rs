@@ -11,7 +11,7 @@ use bevy::{
 use crate::{
     components::tags::{GameOverMenuUI, MenuUI},
     states::{GameState, MenuState},
-    systems::{game_over_menu::spawn_game_over_menu, main_menu::spawn_main_menu},
+    systems::ui::{game_over_menu::spawn_game_over_menu, main_menu::spawn_main_menu},
     ui::menu::{despawn_with, menu_button_system},
 };
 

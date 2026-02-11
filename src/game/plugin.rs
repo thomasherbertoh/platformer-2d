@@ -1,9 +1,7 @@
 use bevy::{
     app::{App, Plugin, Update},
-    ecs::schedule::IntoScheduleConfigs,
     state::{
         app::AppExtStates,
-        condition::in_state,
         state::{OnEnter, OnExit},
     },
 };
@@ -14,8 +12,9 @@ use crate::{
     ui::{
         plugins::menu::MenuPlugin,
         systems::{
-            splash::{cleanup_splash, setup_splash, splash_timer},
-            win::{cleanup_win, win_screen_system, win_timer},
+            splash::{cleanup_splash, setup_splash},
+            timer::tick_game_timer,
+            win::{cleanup_win, win_screen_system},
         },
     },
     world::{plugin::WorldPlugin, systems::cleanup_world},
@@ -33,12 +32,6 @@ impl Plugin for GamePlugin {
             .add_systems(OnExit(GameState::Playing), cleanup_world)
             .add_systems(OnEnter(GameState::Win), win_screen_system)
             .add_systems(OnExit(GameState::Win), cleanup_win)
-            .add_systems(
-                Update,
-                (
-                    splash_timer.run_if(in_state(GameState::SplashScreen)),
-                    win_timer.run_if(in_state(GameState::Win)),
-                ),
-            );
+            .add_systems(Update, tick_game_timer);
     }
 }

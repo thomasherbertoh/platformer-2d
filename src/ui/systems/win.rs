@@ -5,21 +5,25 @@ use bevy::{
     ecs::{
         entity::Entity,
         query::With,
-        system::{Commands, Query, Res, ResMut},
+        system::{Commands, Query, Res},
     },
-    state::state::NextState,
     text::{TextColor, TextFont},
-    time::{Time, Timer, TimerMode},
+    time::{Timer, TimerMode},
     ui::{Node, UiRect, Val, widget::Text},
 };
 
 use crate::{
     game::states::{GameState, MenuState},
-    ui::{components::WinEntity, resources::WinTimer},
+    ui::{components::WinEntity, resources::GameTimer},
 };
 
 pub fn win_screen_system(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.insert_resource(WinTimer(Timer::from_seconds(3.0, TimerMode::Once)));
+    commands.insert_resource(GameTimer {
+        timer: Timer::from_seconds(3.0, TimerMode::Once),
+        target_state: GameState::Win,
+        next_game_state: GameState::Menu,
+        next_menu_state: MenuState::Main,
+    });
     commands.spawn((
         Camera2d,
         WinEntity,
@@ -35,19 +39,6 @@ pub fn win_screen_system(mut commands: Commands, asset_server: Res<AssetServer>)
             ..Default::default()
         },
     ));
-}
-
-pub fn win_timer(
-    time: Res<Time>,
-    mut timer: ResMut<WinTimer>,
-    mut game_state: ResMut<NextState<GameState>>,
-    mut menu_state: ResMut<NextState<MenuState>>,
-) {
-    timer.0.tick(time.delta());
-    if timer.0.is_finished() {
-        game_state.set(GameState::Menu);
-        menu_state.set(MenuState::Main);
-    }
 }
 
 pub fn cleanup_win(mut commands: Commands, query: Query<Entity, With<WinEntity>>) {

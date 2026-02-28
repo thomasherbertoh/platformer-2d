@@ -16,7 +16,7 @@ use bevy_rapier2d::prelude::{
 };
 
 use crate::{
-    game::resources::{Config, PlayerDimensions},
+    game::resources::{Colours, Config, PlayerDimensions, PlayerMovement, Rgb, Rgba},
     player::components::{FootSensor, OnGround, Player},
     world::{
         components::{
@@ -34,8 +34,13 @@ pub fn build_world(mut commands: Commands, mut level_data: ResMut<LevelData>, co
     for block in &level_data.blocks {
         match block.block_type {
             Floor => spawn_block(&mut commands, block.pos, block.size),
-            PlayerSpawn => spawn_player(&mut commands, block.pos, config.player_dimensions.clone()),
-            End => spawn_level_end(&mut commands, block.pos, config.player_dimensions.clone()),
+            PlayerSpawn => spawn_player(&mut commands, block.pos, &config.player_dimensions),
+            End => spawn_level_end(
+                &mut commands,
+                block.pos,
+                &config.player_dimensions,
+                &config.colours,
+            ),
         }
     }
 
@@ -100,7 +105,7 @@ fn merge_blocks(level_data: &mut ResMut<LevelData>) {
     level_data.blocks = blocks;
 }
 
-fn spawn_player(commands: &mut Commands, pos: Vec3, player_dimensions: PlayerDimensions) {
+fn spawn_player(commands: &mut Commands, pos: Vec3, player_dimensions: &PlayerDimensions) {
     commands
         .spawn((
             Player,
@@ -139,7 +144,13 @@ fn spawn_player(commands: &mut Commands, pos: Vec3, player_dimensions: PlayerDim
         });
 }
 
-fn spawn_level_end(commands: &mut Commands, pos: Vec3, player_dimensions: PlayerDimensions) {
+fn spawn_level_end(
+    commands: &mut Commands,
+    pos: Vec3,
+    player_dimensions: &PlayerDimensions,
+    colours: &Colours,
+) {
+    let level_end_colour = &colours.level_end_colour;
     commands.spawn((
         EndGate,
         World,
@@ -149,7 +160,12 @@ fn spawn_level_end(commands: &mut Commands, pos: Vec3, player_dimensions: Player
         ),
         ActiveEvents::COLLISION_EVENTS,
         Sprite {
-            color: Color::linear_rgba(0.4, 1.0, 0.5, 0.2),
+            color: Color::linear_rgba(
+                level_end_colour.r,
+                level_end_colour.g,
+                level_end_colour.b,
+                level_end_colour.a,
+            ),
             custom_size: Some(Vec2::new(
                 player_dimensions.width * 1.1,
                 player_dimensions.height * 1.1,

@@ -12,10 +12,13 @@ use bevy::{
     ui::{AlignItems, BackgroundColor, FlexDirection, JustifyContent, Node, Val},
 };
 
-use crate::ui::{components::MenuAction, systems::button::spawn_button};
+use crate::{
+    game::resources::{Colours, Config},
+    ui::{components::MenuAction, systems::button::spawn_button},
+};
 
 pub trait Menu {
-    fn spawn_menu(commands: Commands, asset_server: Res<AssetServer>);
+    fn spawn_menu(commands: Commands, asset_server: Res<AssetServer>, config: Res<Config>);
 }
 
 pub fn do_spawn_menu<T: Component>(
@@ -23,8 +26,12 @@ pub fn do_spawn_menu<T: Component>(
     asset_server: Res<AssetServer>,
     button_details: Vec<(&str, MenuAction)>,
     menu_type: T,
+    colours: &Colours,
 ) {
     let font: Handle<Font> = asset_server.load("fonts/Roboto-Regular.ttf");
+
+    let menu_background_colour_a = &colours.menu_background_colour_a;
+    let menu_background_colour_b = &colours.menu_background_colour_b;
 
     commands
         .spawn((
@@ -37,7 +44,11 @@ pub fn do_spawn_menu<T: Component>(
                 flex_direction: FlexDirection::Column,
                 ..Default::default()
             },
-            BackgroundColor(Color::srgb(0.1, 0.1, 0.15)),
+            BackgroundColor(Color::srgb(
+                menu_background_colour_a.r,
+                menu_background_colour_a.g,
+                menu_background_colour_a.b,
+            )),
             menu_type,
         ))
         .with_children(|parent| {
@@ -51,11 +62,15 @@ pub fn do_spawn_menu<T: Component>(
                         align_items: AlignItems::Center,
                         ..Default::default()
                     },
-                    BackgroundColor(Color::srgb(0.2, 0.2, 0.3)),
+                    BackgroundColor(Color::srgb(
+                        menu_background_colour_b.r,
+                        menu_background_colour_b.g,
+                        menu_background_colour_b.b,
+                    )),
                 ))
                 .with_children(|menu| {
                     for (text, menu_action) in button_details {
-                        spawn_button(menu, &font, text, menu_action);
+                        spawn_button(menu, &font, text, menu_action, colours);
                     }
                 });
         });

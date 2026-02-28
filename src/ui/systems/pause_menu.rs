@@ -3,15 +3,18 @@ use bevy::{
     ecs::system::{Commands, Res},
 };
 
-use crate::ui::{
-    components::{MenuAction, PauseMenuUI},
-    systems::menu::{Menu, do_spawn_menu},
+use crate::{
+    game::resources::Config,
+    ui::{
+        components::{MenuAction, PauseMenuUI},
+        systems::menu::{Menu, do_spawn_menu},
+    },
 };
 
 pub struct PauseMenu;
 
 impl Menu for PauseMenu {
-    fn spawn_menu(commands: Commands, asset_server: Res<AssetServer>) {
+    fn spawn_menu(commands: Commands, asset_server: Res<AssetServer>, config: Res<Config>) {
         do_spawn_menu(
             commands,
             asset_server,
@@ -20,6 +23,7 @@ impl Menu for PauseMenu {
                 ("Main Menu", MenuAction::BackToMainMenu),
             ],
             PauseMenuUI,
+            &config.colours,
         );
     }
 }

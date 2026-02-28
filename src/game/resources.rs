@@ -1,7 +1,7 @@
 use bevy::ecs::resource::Resource;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct PlayerDimensions {
     pub height: f32,
     pub width: f32,

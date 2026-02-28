@@ -16,6 +16,7 @@ use bevy_rapier2d::prelude::{
 };
 
 use crate::{
+    game::resources::{Config, PlayerDimensions},
     player::components::{FootSensor, OnGround, Player},
     world::{
         components::{
@@ -27,14 +28,14 @@ use crate::{
     },
 };
 
-pub fn build_world(mut commands: Commands, mut level_data: ResMut<LevelData>) {
+pub fn build_world(mut commands: Commands, mut level_data: ResMut<LevelData>, config: Res<Config>) {
     merge_blocks(&mut level_data);
 
     for block in &level_data.blocks {
         match block.block_type {
             Floor => spawn_block(&mut commands, block.pos, block.size),
-            PlayerSpawn => spawn_player(&mut commands, block.pos),
-            End => spawn_level_end(&mut commands, block.pos),
+            PlayerSpawn => spawn_player(&mut commands, block.pos, config.player_dimensions.clone()),
+            End => spawn_level_end(&mut commands, block.pos, config.player_dimensions.clone()),
         }
     }
 
@@ -99,7 +100,7 @@ fn merge_blocks(level_data: &mut ResMut<LevelData>) {
     level_data.blocks = blocks;
 }
 
-fn spawn_player(commands: &mut Commands, pos: Vec3) {
+fn spawn_player(commands: &mut Commands, pos: Vec3, player_dimensions: PlayerDimensions) {
     commands
         .spawn((
             Player,
@@ -109,11 +110,14 @@ fn spawn_player(commands: &mut Commands, pos: Vec3) {
             LockedAxes::ROTATION_LOCKED,
             Velocity::zero(),
             GravityScale(1.0),
-            Collider::cuboid(5.0, 12.5),
+            Collider::cuboid(
+                player_dimensions.width / 2.0,
+                player_dimensions.height / 2.0,
+            ),
             ActiveEvents::COLLISION_EVENTS,
             Sprite {
                 color: Color::linear_rgb(1.0, 0.4, 0.5),
-                custom_size: Some(Vec2::new(10.0, 25.0)),
+                custom_size: Some(Vec2::new(player_dimensions.width, player_dimensions.height)),
                 ..Default::default()
             },
             Transform::from_translation(pos),
@@ -124,23 +128,32 @@ fn spawn_player(commands: &mut Commands, pos: Vec3) {
                 FootSensor,
                 World,
                 Sensor,
-                Collider::cuboid(4.5, 1.0),
+                Collider::cuboid(
+                    player_dimensions.width * 0.45,
+                    player_dimensions.height / 25.0,
+                ),
                 ActiveEvents::COLLISION_EVENTS,
-                Transform::from_xyz(0.0, -13.5, 0.0),
+                Transform::from_xyz(0.0, -((player_dimensions.height / 2.0) + 1.0), 0.0),
                 GlobalTransform::default(),
             ));
         });
 }
 
-fn spawn_level_end(commands: &mut Commands, pos: Vec3) {
+fn spawn_level_end(commands: &mut Commands, pos: Vec3, player_dimensions: PlayerDimensions) {
     commands.spawn((
         EndGate,
         World,
-        Collider::cuboid(5.0, 12.5),
+        Collider::cuboid(
+            (player_dimensions.width * 1.1) / 2.0,
+            (player_dimensions.height * 1.1) / 2.0,
+        ),
         ActiveEvents::COLLISION_EVENTS,
         Sprite {
             color: Color::linear_rgba(0.4, 1.0, 0.5, 0.2),
-            custom_size: Some(Vec2::new(10.0, 25.0)),
+            custom_size: Some(Vec2::new(
+                player_dimensions.width * 1.1,
+                player_dimensions.height * 1.1,
+            )),
             ..Default::default()
         },
         Transform::from_translation(pos),

@@ -1,13 +1,15 @@
 use bevy::{
     app::{App, Plugin, Update},
+    ecs::schedule::IntoScheduleConfigs,
     state::{
         app::AppExtStates,
+        condition::in_state,
         state::{OnEnter, OnExit},
     },
 };
 
 use crate::{
-    game::states::GameState,
+    game::{states::GameState, systems::pause_game},
     player::{plugin::PlayerPlugin, resources::GroundContacts},
     ui::{
         plugins::menu::MenuPlugin,
@@ -32,6 +34,12 @@ impl Plugin for GamePlugin {
             .add_systems(OnExit(GameState::Playing), cleanup_world)
             .add_systems(OnEnter(GameState::Win), win_screen_system)
             .add_systems(OnExit(GameState::Win), cleanup_win)
-            .add_systems(Update, tick_game_timer);
+            .add_systems(
+                Update,
+                (
+                    tick_game_timer,
+                    pause_game.run_if(in_state(GameState::Playing)),
+                ),
+            );
     }
 }

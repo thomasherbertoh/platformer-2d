@@ -9,13 +9,13 @@ pub struct PlayerDimensions {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct PlayerMovement {
-    accel: f32,
-    move_velocity: f32,
-    jump_velocity: f32,
+    pub accel: f32,
+    pub move_velocity: f32,
+    pub jump_velocity: f32,
 }
 
 #[derive(Debug, Deserialize, Resource, Serialize)]
 pub struct Config {
-    player_dimensions: PlayerDimensions,
-    player_movement: PlayerMovement,
+    pub player_dimensions: PlayerDimensions,
+    pub player_movement: PlayerMovement,
 }

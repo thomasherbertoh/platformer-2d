@@ -2,6 +2,7 @@ pub mod button;
 pub mod game_over_menu;
 pub mod main_menu;
 pub mod menu;
+pub mod pause_menu;
 pub mod splash;
 pub mod timer;
 pub mod win;

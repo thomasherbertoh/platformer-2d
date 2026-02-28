@@ -11,12 +11,13 @@ use bevy::{
 use crate::{
     game::states::{GameState, MenuState},
     ui::{
-        components::{GameOverMenuUI, MainMenuUI},
+        components::{GameOverMenuUI, MainMenuUI, PauseMenuUI},
         systems::{
             button::menu_button_system,
             game_over_menu::GameOverMenu,
             main_menu::MainMenu,
             menu::{Menu, despawn_with},
+            pause_menu::PauseMenu,
         },
     },
 };
@@ -33,6 +34,8 @@ impl Plugin for MenuPlugin {
                 <GameOverMenu as Menu>::spawn_menu,
             )
             .add_systems(OnExit(MenuState::GameOver), despawn_with::<GameOverMenuUI>)
+            .add_systems(OnEnter(MenuState::Paused), <PauseMenu as Menu>::spawn_menu)
+            .add_systems(OnExit(MenuState::Paused), despawn_with::<PauseMenuUI>)
             .add_systems(Update, menu_button_system.run_if(in_state(GameState::Menu)));
     }
 }

@@ -14,6 +14,9 @@ pub struct GameOverMenuUI;
 pub struct MainMenuUI;
 
 #[derive(Component)]
+pub struct PauseMenuUI;
+
+#[derive(Component)]
 pub struct SplashEntity;
 
 #[derive(Component)]

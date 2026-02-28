@@ -1,0 +1,11 @@
+{
+    "player_dimensions": [
+        25.0,
+        10.0
+    ],
+    "player_movement": [
+        1.0,
+        200.0,
+        400.0
+    ]
+}

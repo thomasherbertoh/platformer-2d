@@ -1,0 +1,42 @@
+{
+    "dimensions": {
+        "player_height": 25.0,
+        "player_width": 10.0,
+        "end_gate_scale_factor": 1.1,
+        "height_foot_sensor_scale_factor": 0.04,
+        "width_foot_sensor_scale_factor": 0.45
+    },
+    "player_movement": {
+        "accel": 1.0,
+        "move_velocity": 200.0,
+        "jump_velocity": 400.0
+    },
+    "colours": {
+        "player_colour": {
+            "r": 1.0,
+            "g": 0.4,
+            "b": 0.5
+        },
+        "level_end_colour": {
+            "r": 0.4,
+            "g": 1.0,
+            "b": 0.5,
+            "a": 0.2
+        },
+        "button_background_colour": {
+            "r": 0.25,
+            "g": 0.25,
+            "b": 0.35
+        },
+        "menu_outer_background_colour": {
+            "r": 0.1,
+            "g": 0.1,
+            "b": 0.15
+        },
+        "menu_inner_background_colour": {
+            "r": 0.2,
+            "g": 0.2,
+            "b": 0.3
+        }
+    }
+}

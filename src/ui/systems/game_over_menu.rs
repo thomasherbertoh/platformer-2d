@@ -3,15 +3,18 @@ use bevy::{
     ecs::system::{Commands, Res},
 };
 
-use crate::ui::{
-    components::{GameOverMenuUI, MenuAction},
-    systems::menu::{Menu, do_spawn_menu},
+use crate::{
+    game::resources::Config,
+    ui::{
+        components::{GameOverMenuUI, MenuAction},
+        systems::menu::{Menu, do_spawn_menu},
+    },
 };
 
 pub struct GameOverMenu;
 
 impl Menu for GameOverMenu {
-    fn spawn_menu(commands: Commands, asset_server: Res<AssetServer>) {
+    fn spawn_menu(commands: Commands, asset_server: Res<AssetServer>, config: Res<Config>) {
         do_spawn_menu(
             commands,
             asset_server,
@@ -20,6 +23,7 @@ impl Menu for GameOverMenu {
                 ("Main Menu", MenuAction::BackToMainMenu),
             ],
             GameOverMenuUI,
+            &config.colours,
         );
     }
 }

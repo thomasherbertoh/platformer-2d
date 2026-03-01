@@ -9,7 +9,10 @@ use bevy::{
 };
 
 use crate::{
-    game::{states::GameState, systems::pause_game},
+    game::{
+        states::GameState,
+        systems::{load_config, pause_game},
+    },
     player::{plugin::PlayerPlugin, resources::GroundContacts},
     ui::{
         plugins::menu::MenuPlugin,
@@ -28,6 +31,7 @@ impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.insert_state(GameState::default())
             .init_resource::<GroundContacts>()
+            .insert_resource(load_config())
             .add_plugins((MenuPlugin, PlayerPlugin, WorldPlugin))
             .add_systems(OnEnter(GameState::SplashScreen), setup_splash)
             .add_systems(OnExit(GameState::SplashScreen), cleanup_splash)

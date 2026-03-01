@@ -1,10 +1,21 @@
+use std::fs;
+
 use bevy::{
     ecs::system::{Res, ResMut},
     input::{ButtonInput, keyboard::KeyCode},
     state::state::NextState,
 };
 
-use crate::game::states::{GameState, MenuState};
+use crate::game::{
+    resources::Config,
+    states::{GameState, MenuState},
+};
+
+pub fn load_config() -> Config {
+    let config_str = fs::read_to_string("configs/config.json")
+        .expect("Failed to read config file: `configs/config.json`");
+    serde_json::from_str(&config_str).expect("Failed to parse config file: `configs/config.json`")
+}
 
 pub fn pause_game(
     keyboard: Res<ButtonInput<KeyCode>>,

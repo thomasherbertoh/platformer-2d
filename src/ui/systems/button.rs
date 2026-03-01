@@ -18,7 +18,10 @@ use bevy::{
 };
 
 use crate::{
-    game::states::{GameState, MenuState},
+    game::{
+        resources::Colours,
+        states::{GameState, MenuState},
+    },
     ui::components::MenuAction,
 };
 
@@ -49,7 +52,10 @@ pub fn spawn_button(
     font: &Handle<Font>,
     text: &str,
     action: MenuAction,
+    colours: &Colours,
 ) {
+    let button_background_colour = &colours.button_background_colour;
+
     parent
         .spawn((
             Button,
@@ -60,7 +66,11 @@ pub fn spawn_button(
                 align_items: AlignItems::Center,
                 ..Default::default()
             },
-            BackgroundColor(Color::srgb(0.25, 0.25, 0.35)),
+            BackgroundColor(Color::srgb(
+                button_background_colour.r,
+                button_background_colour.g,
+                button_background_colour.b,
+            )),
             action,
         ))
         .with_children(|button| {

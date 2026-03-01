@@ -2,9 +2,12 @@ use bevy::ecs::resource::Resource;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct PlayerDimensions {
-    pub height: f32,
-    pub width: f32,
+pub struct Dimensions {
+    pub player_height: f32,
+    pub player_width: f32,
+    pub end_gate_scale_factor: f32,
+    pub height_foot_sensor_scale_factor: f32,
+    pub width_foot_sensor_scale_factor: f32,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -34,13 +37,13 @@ pub struct Colours {
     pub player_colour: Rgb,
     pub level_end_colour: Rgba,
     pub button_background_colour: Rgb,
-    pub menu_background_colour_a: Rgb,
-    pub menu_background_colour_b: Rgb,
+    pub menu_outer_background_colour: Rgb,
+    pub menu_inner_background_colour: Rgb,
 }
 
 #[derive(Debug, Deserialize, Resource, Serialize)]
 pub struct Config {
-    pub player_dimensions: PlayerDimensions,
+    pub dimensions: Dimensions,
     pub player_movement: PlayerMovement,
     pub colours: Colours,
 }

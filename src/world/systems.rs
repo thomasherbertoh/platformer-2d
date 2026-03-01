@@ -16,7 +16,7 @@ use bevy_rapier2d::prelude::{
 };
 
 use crate::{
-    game::resources::{Colours, Config, PlayerDimensions, PlayerMovement, Rgb, Rgba},
+    game::resources::{Colours, Config, Dimensions},
     player::components::{FootSensor, OnGround, Player},
     world::{
         components::{
@@ -34,11 +34,16 @@ pub fn build_world(mut commands: Commands, mut level_data: ResMut<LevelData>, co
     for block in &level_data.blocks {
         match block.block_type {
             Floor => spawn_block(&mut commands, block.pos, block.size),
-            PlayerSpawn => spawn_player(&mut commands, block.pos, &config.player_dimensions),
+            PlayerSpawn => spawn_player(
+                &mut commands,
+                block.pos,
+                &config.dimensions,
+                &config.colours,
+            ),
             End => spawn_level_end(
                 &mut commands,
                 block.pos,
-                &config.player_dimensions,
+                &config.dimensions,
                 &config.colours,
             ),
         }
@@ -105,7 +110,8 @@ fn merge_blocks(level_data: &mut ResMut<LevelData>) {
     level_data.blocks = blocks;
 }
 
-fn spawn_player(commands: &mut Commands, pos: Vec3, player_dimensions: &PlayerDimensions) {
+fn spawn_player(commands: &mut Commands, pos: Vec3, dimensions: &Dimensions, colours: &Colours) {
+    let player_colour = &colours.player_colour;
     commands
         .spawn((
             Player,
@@ -116,13 +122,13 @@ fn spawn_player(commands: &mut Commands, pos: Vec3, player_dimensions: &PlayerDi
             Velocity::zero(),
             GravityScale(1.0),
             Collider::cuboid(
-                player_dimensions.width / 2.0,
-                player_dimensions.height / 2.0,
+                dimensions.player_width / 2.0,
+                dimensions.player_height / 2.0,
             ),
             ActiveEvents::COLLISION_EVENTS,
             Sprite {
-                color: Color::linear_rgb(1.0, 0.4, 0.5),
-                custom_size: Some(Vec2::new(player_dimensions.width, player_dimensions.height)),
+                color: Color::linear_rgb(player_colour.r, player_colour.g, player_colour.b),
+                custom_size: Some(Vec2::new(dimensions.player_width, dimensions.player_height)),
                 ..Default::default()
             },
             Transform::from_translation(pos),
@@ -134,29 +140,24 @@ fn spawn_player(commands: &mut Commands, pos: Vec3, player_dimensions: &PlayerDi
                 World,
                 Sensor,
                 Collider::cuboid(
-                    player_dimensions.width * 0.45,
-                    player_dimensions.height / 25.0,
+                    dimensions.player_width * dimensions.width_foot_sensor_scale_factor,
+                    dimensions.player_height * dimensions.height_foot_sensor_scale_factor,
                 ),
                 ActiveEvents::COLLISION_EVENTS,
-                Transform::from_xyz(0.0, -((player_dimensions.height / 2.0) + 1.0), 0.0),
+                Transform::from_xyz(0.0, -((dimensions.player_height / 2.0) + 1.0), 0.0),
                 GlobalTransform::default(),
             ));
         });
 }
 
-fn spawn_level_end(
-    commands: &mut Commands,
-    pos: Vec3,
-    player_dimensions: &PlayerDimensions,
-    colours: &Colours,
-) {
+fn spawn_level_end(commands: &mut Commands, pos: Vec3, dimensions: &Dimensions, colours: &Colours) {
     let level_end_colour = &colours.level_end_colour;
     commands.spawn((
         EndGate,
         World,
         Collider::cuboid(
-            (player_dimensions.width * 1.1) / 2.0,
-            (player_dimensions.height * 1.1) / 2.0,
+            (dimensions.player_width * dimensions.end_gate_scale_factor) / 2.0,
+            (dimensions.player_height * dimensions.end_gate_scale_factor) / 2.0,
         ),
         ActiveEvents::COLLISION_EVENTS,
         Sprite {
@@ -167,8 +168,8 @@ fn spawn_level_end(
                 level_end_colour.a,
             ),
             custom_size: Some(Vec2::new(
-                player_dimensions.width * 1.1,
-                player_dimensions.height * 1.1,
+                dimensions.player_width * dimensions.end_gate_scale_factor,
+                dimensions.player_height * dimensions.end_gate_scale_factor,
             )),
             ..Default::default()
         },

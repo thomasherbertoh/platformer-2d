@@ -30,8 +30,8 @@ pub fn do_spawn_menu<T: Component>(
 ) {
     let font: Handle<Font> = asset_server.load("fonts/Roboto-Regular.ttf");
 
-    let menu_background_colour_a = &colours.menu_background_colour_a;
-    let menu_background_colour_b = &colours.menu_background_colour_b;
+    let menu_outer_background_colour = &colours.menu_outer_background_colour;
+    let menu_inner_background_colour = &colours.menu_inner_background_colour;
 
     commands
         .spawn((
@@ -45,9 +45,9 @@ pub fn do_spawn_menu<T: Component>(
                 ..Default::default()
             },
             BackgroundColor(Color::srgb(
-                menu_background_colour_a.r,
-                menu_background_colour_a.g,
-                menu_background_colour_a.b,
+                menu_outer_background_colour.r,
+                menu_outer_background_colour.g,
+                menu_outer_background_colour.b,
             )),
             menu_type,
         ))
@@ -63,9 +63,9 @@ pub fn do_spawn_menu<T: Component>(
                         ..Default::default()
                     },
                     BackgroundColor(Color::srgb(
-                        menu_background_colour_b.r,
-                        menu_background_colour_b.g,
-                        menu_background_colour_b.b,
+                        menu_inner_background_colour.r,
+                        menu_inner_background_colour.g,
+                        menu_inner_background_colour.b,
                     )),
                 ))
                 .with_children(|menu| {

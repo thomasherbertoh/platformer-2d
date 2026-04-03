@@ -56,7 +56,7 @@ pub fn do_spawn_menu<T: Component>(
                 .spawn((
                     Node {
                         width: Val::Px(300.0),
-                        height: Val::Px(200.0),
+                        height: Val::Px(100.0 * button_details.len() as f32),
                         flex_direction: FlexDirection::Column,
                         justify_content: JustifyContent::SpaceEvenly,
                         align_items: AlignItems::Center,

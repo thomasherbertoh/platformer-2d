@@ -14,3 +14,8 @@ pub struct LevelData {
     pub blocks: Vec<Block>,
     pub world_bounds: WorldBounds,
 }
+
+#[derive(Resource)]
+pub struct LevelFile {
+    pub path: String,
+}

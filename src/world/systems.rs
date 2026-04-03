@@ -7,6 +7,7 @@ use bevy::{
         query::With,
         system::{Commands, Query, Res, ResMut},
     },
+    log::info,
     math::{Vec2, Vec3},
     sprite::Sprite,
     transform::components::{GlobalTransform, Transform},
@@ -24,11 +25,17 @@ use crate::{
             BlockType::{End, Floor, PlayerSpawn},
             EndGate, Ground, World, WorldBoundary,
         },
-        resources::{LevelData, WorldBounds},
+        resources::{LevelData, LevelFile, WorldBounds},
     },
 };
 
-pub fn build_world(mut commands: Commands, mut level_data: ResMut<LevelData>, config: Res<Config>) {
+pub fn build_world(
+    mut commands: Commands,
+    mut level_data: ResMut<LevelData>,
+    level_file: Res<LevelFile>,
+    config: Res<Config>,
+) {
+    info!("Attempting to build the world...");
     merge_blocks(&mut level_data);
 
     for block in &level_data.blocks {
@@ -50,9 +57,10 @@ pub fn build_world(mut commands: Commands, mut level_data: ResMut<LevelData>, co
     }
 
     spawn_world_boundaries(&mut commands, &level_data.world_bounds);
+    info!("Successfully built the world.");
 
     // save the processed level
-    save_level_data(&level_data, Some("level-processed"));
+    save_level_data(&level_data, Some(&level_file.path));
 }
 
 fn spawn_world_boundaries(commands: &mut Commands, bounds: &WorldBounds) {
@@ -193,14 +201,23 @@ fn spawn_block(commands: &mut Commands, pos: Vec3, block_size: Vec2) {
     ));
 }
 
-pub fn save_level(level_data: Res<LevelData>) {
-    save_level_data(&level_data, None);
+fn load_level_data(level_file: &Res<LevelFile>) -> LevelData {
+    let level = fs::read_to_string(&level_file.path)
+        .unwrap_or_else(|_| panic!("Failed to read level file: `{}`", level_file.path));
+    serde_json::from_str(&level)
+        .unwrap_or_else(|_| panic!("Failed to parse level file: `{}`", level_file.path))
+}
+
+pub fn setup_level(mut commands: Commands, level_file: Res<LevelFile>) {
+    info!("Attempting to fetch level `{}`", &level_file.path);
+    commands.insert_resource(load_level_data(&level_file));
+    info!("Successfully fetched level `{}`", &level_file.path);
 }
 
 fn save_level_data(level_data: &LevelData, filename: Option<&str>) {
     if let Ok(serialised_level_data) = serde_json::to_string(&level_data) {
         match fs::write(
-            format!("assets/levels/{}.json", filename.map_or("level", |v| v)),
+            filename.unwrap_or("assets/levels/level.json"),
             serialised_level_data,
         ) {
             Ok(_) => {}

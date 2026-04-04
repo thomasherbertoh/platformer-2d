@@ -4,6 +4,7 @@ use bevy::{
     color::Color,
     ecs::{
         entity::Entity,
+        message::MessageReader,
         query::With,
         system::{Commands, Query, Res, ResMut},
     },
@@ -17,7 +18,10 @@ use bevy_rapier2d::prelude::{
 };
 
 use crate::{
-    game::resources::{Colours, Config, Dimensions},
+    game::{
+        events::LoadLevelEvent,
+        resources::{Colours, Config, Dimensions},
+    },
     player::components::{FootSensor, OnGround, Player},
     world::{
         components::{
@@ -201,17 +205,30 @@ fn spawn_block(commands: &mut Commands, pos: Vec3, block_size: Vec2) {
     ));
 }
 
-fn load_level_data(level_file: &Res<LevelFile>) -> LevelData {
+fn load_level_data(level_file: &LevelFile) -> LevelData {
     let level = fs::read_to_string(&level_file.path)
         .unwrap_or_else(|_| panic!("Failed to read level file: `{}`", level_file.path));
     serde_json::from_str(&level)
         .unwrap_or_else(|_| panic!("Failed to parse level file: `{}`", level_file.path))
 }
 
-pub fn setup_level(mut commands: Commands, level_file: Res<LevelFile>) {
+fn setup_level(commands: &mut Commands, level_file: &LevelFile) {
     info!("Attempting to fetch level `{}`", &level_file.path);
-    commands.insert_resource(load_level_data(&level_file));
+    commands.insert_resource(load_level_data(level_file));
     info!("Successfully fetched level `{}`", &level_file.path);
+}
+
+fn update_level_file(commands: &mut Commands, file_path: String) {
+    commands.remove_resource::<LevelFile>();
+    let level_file = LevelFile { path: file_path };
+    commands.insert_resource(level_file.clone());
+    setup_level(commands, &level_file);
+}
+
+pub fn handle_load_level(mut commands: Commands, mut reader: MessageReader<LoadLevelEvent>) {
+    for message in reader.read() {
+        update_level_file(&mut commands, message.path.clone());
+    }
 }
 
 fn save_level_data(level_data: &LevelData, filename: Option<&str>) {

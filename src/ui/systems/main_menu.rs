@@ -18,7 +18,11 @@ impl Menu for MainMenu {
         do_spawn_menu(
             commands,
             asset_server,
-            vec![("Play", MenuAction::Play), ("Quit", MenuAction::Quit)],
+            vec![
+                ("Play", MenuAction::Play),
+                ("Level Select", MenuAction::LevelSelect),
+                ("Quit", MenuAction::Quit),
+            ],
             MainMenuUI,
             &config.colours,
         );

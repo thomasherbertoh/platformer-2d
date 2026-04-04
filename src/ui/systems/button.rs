@@ -1,10 +1,11 @@
-use std::process::exit;
+use std::{env::current_dir, process::exit};
 
 use bevy::{
     asset::Handle,
     color::Color,
     ecs::{
         hierarchy::ChildOf,
+        message::MessageWriter,
         query::{Changed, With},
         relationship::RelatedSpawnerCommands,
         system::{Query, ResMut},
@@ -19,6 +20,7 @@ use bevy::{
 
 use crate::{
     game::{
+        events::OpenFileDialogEvent,
         resources::Colours,
         states::{GameState, MenuState},
     },
@@ -32,6 +34,7 @@ pub fn menu_button_system(
     mut interaction_query: Query<(&Interaction, &MenuAction), ButtonsInteractedWith>,
     mut game_state: ResMut<NextState<GameState>>,
     mut menu_state: ResMut<NextState<MenuState>>,
+    mut file_dialog_writer: MessageWriter<OpenFileDialogEvent>,
 ) {
     for (interaction, action) in &mut interaction_query {
         if *interaction == Interaction::Pressed {
@@ -41,6 +44,11 @@ pub fn menu_button_system(
                 MenuAction::BackToMainMenu => {
                     game_state.set(GameState::Menu);
                     menu_state.set(MenuState::Main);
+                }
+                MenuAction::LevelSelect => {
+                    let mut path = current_dir().unwrap_or_default();
+                    path.push("assets/levels/");
+                    file_dialog_writer.write(OpenFileDialogEvent { directory: path });
                 }
             }
         }

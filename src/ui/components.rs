@@ -5,6 +5,7 @@ pub enum MenuAction {
     Play,
     Quit,
     BackToMainMenu,
+    LevelSelect,
 }
 
 #[derive(Component)]

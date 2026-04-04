@@ -15,7 +15,7 @@ pub struct LevelData {
     pub world_bounds: WorldBounds,
 }
 
-#[derive(Resource)]
+#[derive(Clone, Resource)]
 pub struct LevelFile {
     pub path: String,
 }

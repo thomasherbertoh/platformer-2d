@@ -1,4 +1,7 @@
-use bevy::{ecs::resource::Resource, time::Timer};
+use bevy::{
+    ecs::{component::Component, resource::Resource},
+    time::Timer,
+};
 
 use crate::game::states::{GameState, MenuState};
 
@@ -9,3 +12,6 @@ pub struct GameTimer {
     pub next_game_state: GameState,
     pub next_menu_state: MenuState,
 }
+
+#[derive(Component)]
+pub struct HeadingText;

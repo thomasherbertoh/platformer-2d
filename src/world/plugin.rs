@@ -9,7 +9,7 @@ use crate::{
         center_camera_on_world, spawn_world_camera, update_camera_projection_on_resize,
     },
     game::{events::LoadLevelEvent, states::GameState},
-    world::systems::{build_world, handle_load_level},
+    world::systems::{build_world, handle_load_level, setup_level},
 };
 
 pub struct WorldPlugin;
@@ -19,7 +19,7 @@ impl Plugin for WorldPlugin {
         app.add_message::<LoadLevelEvent>()
             .add_systems(
                 OnEnter(GameState::Playing),
-                (build_world, spawn_world_camera),
+                (setup_level, build_world, spawn_world_camera).chain(),
             )
             .add_systems(
                 Update,

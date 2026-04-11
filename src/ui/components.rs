@@ -8,13 +8,13 @@ pub enum MenuAction {
     LevelSelect,
 }
 
-#[derive(Component)]
+#[derive(Component, Clone, Copy)]
 pub struct GameOverMenuUI;
 
-#[derive(Component)]
+#[derive(Component, Clone, Copy)]
 pub struct MainMenuUI;
 
-#[derive(Component)]
+#[derive(Component, Clone, Copy)]
 pub struct PauseMenuUI;
 
 #[derive(Component)]

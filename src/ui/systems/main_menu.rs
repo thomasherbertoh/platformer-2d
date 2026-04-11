@@ -1,12 +1,18 @@
 use bevy::{
     asset::AssetServer,
-    ecs::system::{Commands, Res},
+    ecs::{
+        message::MessageReader,
+        query::With,
+        system::{Commands, Query, Res},
+    },
+    ui::widget::Text,
 };
 
 use crate::{
-    game::resources::Config,
+    game::{events::LoadLevelEvent, resources::Config},
     ui::{
         components::{MainMenuUI, MenuAction},
+        resources::HeadingText,
         systems::menu::{Menu, do_spawn_menu},
     },
 };
@@ -25,6 +31,26 @@ impl Menu for MainMenu {
             ],
             MainMenuUI,
             &config.colours,
+            "Main Menu - No Level Selected".to_string(),
         );
+    }
+}
+
+pub fn update_level_name_in_main_menu_heading(
+    mut reader: MessageReader<LoadLevelEvent>,
+    mut query: Query<&mut Text, (With<HeadingText>, With<MainMenuUI>)>,
+) {
+    if let Some(load_level_event) = reader.read().next()
+        && let Ok(mut text) = query.single_mut()
+    {
+        text.0 = format!(
+            "Main Menu - {}",
+            load_level_event
+                .path
+                .split("/")
+                .last()
+                .map(|s| s.trim_end_matches(".json"))
+                .unwrap()
+        )
     }
 }

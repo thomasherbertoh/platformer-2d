@@ -212,17 +212,20 @@ fn load_level_data(level_file: &LevelFile) -> LevelData {
         .unwrap_or_else(|_| panic!("Failed to parse level file: `{}`", level_file.path))
 }
 
-fn setup_level(commands: &mut Commands, level_file: &LevelFile) {
+fn do_setup_level(commands: &mut Commands, level_file: &LevelFile) {
     info!("Attempting to fetch level `{}`", &level_file.path);
     commands.insert_resource(load_level_data(level_file));
     info!("Successfully fetched level `{}`", &level_file.path);
 }
 
+pub fn setup_level(mut commands: Commands, level_file: Res<LevelFile>) {
+    do_setup_level(&mut commands, &level_file);
+}
+
 fn update_level_file(commands: &mut Commands, file_path: String) {
-    commands.remove_resource::<LevelFile>();
     let level_file = LevelFile { path: file_path };
     commands.insert_resource(level_file.clone());
-    setup_level(commands, &level_file);
+    do_setup_level(commands, &level_file);
 }
 
 pub fn handle_load_level(mut commands: Commands, mut reader: MessageReader<LoadLevelEvent>) {

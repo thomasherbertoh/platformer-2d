@@ -24,6 +24,7 @@ impl Menu for GameOverMenu {
             ],
             GameOverMenuUI,
             &config.colours,
+            "Game Over".to_string(),
         );
     }
 }

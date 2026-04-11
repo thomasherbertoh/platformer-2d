@@ -10,8 +10,9 @@ use bevy::{
 
 use crate::{
     game::{
+        events::OpenFileDialogEvent,
         states::GameState,
-        systems::{load_config, pause_game},
+        systems::{load_config, open_file_dialog, pause_game},
     },
     player::{plugin::PlayerPlugin, resources::GroundContacts},
     ui::{
@@ -32,6 +33,7 @@ impl Plugin for GamePlugin {
         app.insert_state(GameState::default())
             .init_resource::<GroundContacts>()
             .insert_resource(load_config())
+            .add_message::<OpenFileDialogEvent>()
             .add_plugins((MenuPlugin, PlayerPlugin, WorldPlugin))
             .add_systems(OnEnter(GameState::SplashScreen), setup_splash)
             .add_systems(OnExit(GameState::SplashScreen), cleanup_splash)
@@ -43,6 +45,7 @@ impl Plugin for GamePlugin {
                 (
                     tick_game_timer,
                     pause_game.run_if(in_state(GameState::Playing)),
+                    open_file_dialog,
                 ),
             );
     }

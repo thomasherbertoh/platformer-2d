@@ -24,6 +24,7 @@ impl Menu for PauseMenu {
             ],
             PauseMenuUI,
             &config.colours,
+            "Pause".to_string(),
         );
     }
 }

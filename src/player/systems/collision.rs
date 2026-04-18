@@ -41,11 +41,13 @@ pub fn foot_sensor_collision_system(
 }
 
 pub fn update_grounded_state(
-    mut players: Query<&mut OnGround, With<Player>>,
+    mut players: Query<(&mut OnGround, &Velocity), With<Player>>,
     contacts: Res<GroundContacts>,
 ) {
-    let grounded = !contacts.sensors.is_empty();
-    for mut on_ground in &mut players {
+    let mut grounded = !contacts.sensors.is_empty();
+    for (mut on_ground, velocity) in &mut players {
+        // we can't be grounded if we're moving upwards
+        grounded &= velocity.linvel.y <= 0.0;
         on_ground.0 = grounded;
     }
 }

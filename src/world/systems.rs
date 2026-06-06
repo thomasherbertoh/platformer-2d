@@ -11,6 +11,7 @@ use bevy::{
     log::info,
     math::{Vec2, Vec3},
     sprite::Sprite,
+    time::{Timer, TimerMode},
     transform::components::{GlobalTransform, Transform},
 };
 use bevy_rapier2d::prelude::{
@@ -22,7 +23,7 @@ use crate::{
         events::LoadLevelEvent,
         resources::{Colours, Config, Dimensions},
     },
-    player::components::{FootSensor, OnGround, Player},
+    player::components::{CoyoteTime, FootSensor, JumpBuffer, OnGround, Player},
     world::{
         components::{
             Block,
@@ -145,6 +146,18 @@ fn spawn_player(commands: &mut Commands, pos: Vec3, dimensions: &Dimensions, col
             },
             Transform::from_translation(pos),
             GlobalTransform::default(),
+            CoyoteTime {
+                timer: Timer::from_seconds(0.15, TimerMode::Once),
+            },
+            JumpBuffer {
+                timer: {
+                    let mut timer = Timer::from_seconds(0.15, TimerMode::Once);
+                    // The jump buffer should have a duration of 0.15s but start at 0s
+                    // (so the player doesn't jump automatically on world load)
+                    timer.finish();
+                    timer
+                },
+            },
         ))
         .with_children(|parent| {
             parent.spawn((

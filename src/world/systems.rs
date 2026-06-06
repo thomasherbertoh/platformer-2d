@@ -23,7 +23,7 @@ use crate::{
         events::LoadLevelEvent,
         resources::{Colours, Config, Dimensions},
     },
-    player::components::{CoyoteTime, FootSensor, OnGround, Player},
+    player::components::{CoyoteTime, FootSensor, JumpBuffer, OnGround, Player},
     world::{
         components::{
             Block,
@@ -147,6 +147,9 @@ fn spawn_player(commands: &mut Commands, pos: Vec3, dimensions: &Dimensions, col
             Transform::from_translation(pos),
             GlobalTransform::default(),
             CoyoteTime {
+                timer: Timer::from_seconds(0.15, TimerMode::Once),
+            },
+            JumpBuffer {
                 timer: Timer::from_seconds(0.15, TimerMode::Once),
             },
         ))

@@ -12,7 +12,7 @@ use crate::{
             clamp_velocity_when_grounded, end_gate_collision_system, foot_sensor_collision_system,
             ground_detection_system, update_grounded_state, world_boundary_collision_system,
         },
-        movement::{jump_system, player_movement, update_coyote_time},
+        movement::{jump_system, player_movement, update_coyote_time, update_jump_buffer},
     },
 };
 
@@ -25,7 +25,7 @@ impl Plugin for PlayerPlugin {
             (
                 (
                     player_movement,
-                    (update_coyote_time, jump_system).chain(),
+                    (update_coyote_time, update_jump_buffer, jump_system).chain(),
                     end_gate_collision_system,
                     world_boundary_collision_system,
                 )

@@ -47,15 +47,15 @@ pub fn update_grounded_state(
     let mut grounded = !contacts.sensors.is_empty();
     for (mut on_ground, velocity) in &mut players {
         // we can't be grounded if we're moving upwards
-        grounded &= velocity.linvel.y <= 0.0;
+        grounded &= velocity.linear.y <= 0.0;
         on_ground.0 = grounded;
     }
 }
 
 pub fn clamp_velocity_when_grounded(mut query: Query<(&mut Velocity, &OnGround), With<Player>>) {
     for (mut velocity, on_ground) in &mut query {
-        if on_ground.0 && velocity.linvel.y < 0.0 {
-            velocity.linvel.y = 0.0;
+        if on_ground.0 && velocity.linear.y < 0.0 {
+            velocity.linear.y = 0.0;
         }
     }
 }

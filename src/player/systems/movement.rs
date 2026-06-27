@@ -26,8 +26,8 @@ pub fn player_movement(
         if keyboard.pressed(KeyCode::KeyD) {
             move_dir += config.player_movement.accel;
         }
-
-        velocity.linvel.x = move_dir * config.player_movement.move_velocity;
+        
+        velocity.linear.x = move_dir * config.player_movement.move_velocity;
     }
 }
 
@@ -54,7 +54,7 @@ pub fn jump_system(
             || (on_ground.0 && !buffer.timer.is_finished())
         {
             // Jump!
-            velocity.linvel.y = config.player_movement.jump_velocity;
+            velocity.linear.y = config.player_movement.jump_velocity;
 
             // prevent double-jump
             coyote.consume();

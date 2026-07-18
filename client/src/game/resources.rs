@@ -1,5 +1,7 @@
 use bevy::ecs::resource::Resource;
+use crossbeam_channel::{Receiver, Sender};
 use serde::{Deserialize, Serialize};
+use shared::resources::LevelData;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Dimensions {
@@ -46,4 +48,10 @@ pub struct Config {
     pub dimensions: Dimensions,
     pub player_movement: PlayerMovement,
     pub colours: Colours,
+}
+
+#[derive(Resource)]
+pub struct LevelChannel {
+    pub sender: Sender<LevelData>,
+    pub receiver: Receiver<LevelData>,
 }

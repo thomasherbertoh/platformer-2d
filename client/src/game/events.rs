@@ -1,6 +1,5 @@
+use bevy::prelude::Message;
 use std::path::PathBuf;
-
-use bevy::ecs::message::Message;
 
 #[derive(Message)]
 pub struct LoadLevelEvent {
@@ -11,3 +10,6 @@ pub struct LoadLevelEvent {
 pub struct OpenFileDialogEvent {
     pub directory: PathBuf,
 }
+
+#[derive(Message)]
+pub struct FetchLevelEvent;

@@ -1,5 +1,16 @@
 use std::fs;
 
+use crate::{
+    game::{
+        events::LoadLevelEvent,
+        resources::{Colours, Config, Dimensions},
+    },
+    player::components::{CoyoteTime, FootSensor, JumpBuffer, OnGround, Player},
+    world::{
+        components::{Block, EndGate, Ground, World, WorldBoundary},
+        resources::{Level, LevelFile},
+    },
+};
 use bevy::{
     color::Color,
     ecs::{
@@ -17,26 +28,14 @@ use bevy::{
 use bevy_rapier2d::prelude::{
     ActiveEvents, Collider, GravityScale, LockedAxes, RigidBody, Sensor, Velocity,
 };
-
-use crate::{
-    game::{
-        events::LoadLevelEvent,
-        resources::{Colours, Config, Dimensions},
-    },
-    player::components::{CoyoteTime, FootSensor, JumpBuffer, OnGround, Player},
-    world::{
-        components::{
-            Block,
-            BlockType::{End, Floor, PlayerSpawn},
-            EndGate, Ground, World, WorldBoundary,
-        },
-        resources::{LevelData, LevelFile, WorldBounds},
-    },
+use shared::{
+    components::BlockType::{End, Floor, PlayerSpawn},
+    resources::WorldBounds,
 };
 
 pub fn build_world(
     mut commands: Commands,
-    mut level_data: ResMut<LevelData>,
+    mut level_data: ResMut<Level>,
     level_file: Res<LevelFile>,
     config: Res<Config>,
 ) {
@@ -106,7 +105,7 @@ fn spawn_world_boundaries(commands: &mut Commands, bounds: &WorldBounds) {
     ));
 }
 
-fn merge_blocks(level_data: &mut ResMut<LevelData>) {
+fn merge_blocks(level_data: &mut ResMut<Level>) {
     let mut floor_blocks = Vec::new();
     let mut non_floor_blocks = Vec::new();
 
@@ -218,7 +217,7 @@ fn spawn_block(commands: &mut Commands, pos: Vec3, block_size: Vec2) {
     ));
 }
 
-fn load_level_data(level_file: &LevelFile) -> LevelData {
+fn load_level_data(level_file: &LevelFile) -> Level {
     let level = fs::read_to_string(&level_file.path)
         .unwrap_or_else(|_| panic!("Failed to read level file: `{}`", level_file.path));
     serde_json::from_str(&level)
@@ -247,7 +246,7 @@ pub fn handle_load_level(mut commands: Commands, mut reader: MessageReader<LoadL
     }
 }
 
-fn save_level_data(level_data: &LevelData, filename: Option<&str>) {
+fn save_level_data(level_data: &Level, filename: Option<&str>) {
     if let Ok(serialised_level_data) = serde_json::to_string(&level_data) {
         match fs::write(
             filename.unwrap_or("assets/levels/level.json"),

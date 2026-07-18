@@ -6,10 +6,13 @@ mod world;
 
 use std::env;
 
+use crate::{
+    game::{events::FetchLevelEvent, plugin::GamePlugin, resources::LevelChannel},
+    world::resources::LevelFile,
+};
 use bevy::{DefaultPlugins, app::App};
 use bevy_rapier2d::plugin::{NoUserData, RapierPhysicsPlugin};
-
-use crate::{game::plugin::GamePlugin, world::resources::LevelFile};
+use crossbeam_channel::unbounded;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -23,8 +26,15 @@ fn main() {
         }
     );
 
+    let (tx, rx) = unbounded();
+
     App::new()
         .insert_resource(LevelFile { path: level_path })
+        .insert_resource(LevelChannel {
+            sender: tx,
+            receiver: rx,
+        })
+        .add_message::<FetchLevelEvent>()
         .add_plugins((
             DefaultPlugins,
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0),

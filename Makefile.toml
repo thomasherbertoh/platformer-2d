@@ -1,0 +1,30 @@
+[tasks.server]
+description = "Run the Axum backend server"
+workspace = false
+command = "cargo"
+args = ["run", "-p", "server"]
+
+[tasks.client-native]
+description = "Run the Bevy game natively"
+workspace = false
+command = "cargo"
+args = ["run", "-p", "client"]
+
+[tasks.client-web]
+description = "Serve the Bevy game via WASM using Trunk"
+workspace = false
+command = "trunk"
+args = ["serve"]
+cwd = "client" # Trunk needs to run inside the client directory to find its index.html
+
+# --- COMPOSITE PARALLEL TASKS ---
+
+[tasks.dev-native]
+description = "Run both the server and the native game simultaneously"
+workspace = false
+run_task = { name = ["server", "client-native"], parallel = true }
+
+[tasks.dev-web]
+description = "Run both the server and the web game simultaneously"
+workspace = false
+run_task = { name = ["server", "client-web"], parallel = true }

@@ -1,16 +1,10 @@
-use bevy::{ecs::resource::Resource, math::Vec2};
-use serde::{Deserialize, Serialize};
-
 use crate::world::components::Block;
+use bevy::ecs::resource::Resource;
+use serde::{Deserialize, Serialize};
+use shared::resources::WorldBounds;
 
 #[derive(Clone, Deserialize, Resource, Serialize)]
-pub struct WorldBounds {
-    pub min: Vec2,
-    pub max: Vec2,
-}
-
-#[derive(Clone, Deserialize, Resource, Serialize)]
-pub struct LevelData {
+pub struct Level {
     pub blocks: Vec<Block>,
     pub world_bounds: WorldBounds,
 }

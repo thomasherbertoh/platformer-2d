@@ -3,6 +3,7 @@ use bevy::{
     math::{Vec2, Vec3},
 };
 use serde::{Deserialize, Serialize};
+use shared::components::BlockType;
 
 #[derive(Component)]
 pub struct EndGate;
@@ -16,15 +17,7 @@ pub struct World;
 #[derive(Component)]
 pub struct WorldBoundary;
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
-pub enum BlockType {
-    #[default]
-    Floor,
-    PlayerSpawn,
-    End,
-}
-
-#[derive(Clone, Component, Debug, Deserialize, Serialize)]
+#[derive(Copy, Clone, Component, Debug, Deserialize, Serialize)]
 pub struct Block {
     pub pos: Vec3,
     pub size: Vec2,

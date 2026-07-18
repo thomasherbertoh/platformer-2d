@@ -1,3 +1,7 @@
+use crate::{
+    player::components::Player,
+    world::{components::World, resources::Level},
+};
 use bevy::{
     camera::{Camera, Camera2d, OrthographicProjection, Projection, ScalingMode},
     ecs::{
@@ -7,11 +11,6 @@ use bevy::{
     },
     transform::components::{GlobalTransform, Transform},
     window::{Window, WindowResized},
-};
-
-use crate::{
-    player::components::Player,
-    world::{components::World, resources::LevelData},
 };
 
 pub fn spawn_world_camera(mut commands: Commands) {
@@ -32,7 +31,7 @@ pub fn spawn_world_camera(mut commands: Commands) {
 }
 
 pub fn center_camera_on_world(
-    level_data: Res<LevelData>,
+    level_data: Res<Level>,
     mut camera_query: Query<&mut Transform, With<Camera>>,
 ) {
     if let Ok(mut transform) = camera_query.single_mut() {
@@ -45,7 +44,7 @@ pub fn center_camera_on_world(
 pub fn update_camera_projection_on_resize(
     resize_events: MessageReader<WindowResized>,
     windows: Query<&Window>,
-    level_data: Res<LevelData>,
+    level_data: Res<Level>,
     mut query: Query<&mut Projection, With<Camera2d>>,
 ) {
     if resize_events.is_empty() {

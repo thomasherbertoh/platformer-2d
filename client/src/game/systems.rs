@@ -5,7 +5,7 @@ use bevy::{
         message::{MessageReader, MessageWriter},
         system::{Res, ResMut},
     },
-    input::{ButtonInput, keyboard::KeyCode},
+    input::{keyboard::KeyCode, ButtonInput},
     log::info,
     state::state::NextState,
 };
